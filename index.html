@@ -1,52 +1,3 @@
-# Şantiye Pro — Kod Analizi & Tam Yeniden Yazım
-
-Mevcut kodu derinlemesine inceledim. 225.818 karakter, ~4.969 satır, 123 fonksiyon içeren büyük ama ciddi sorunlar barındıran bir uygulama. Aşağıda tam analiz ve ardından yeniden yazılmış profesyonel kod sunuyorum.
-
-***
-
-## 1. Mevcut Kod Analizi
-
-### 🔴 Kritik Hatalar
-- **localStorage sandbox sorunu**: Uygulama iframe içinde çalıştırıldığında 5 localStorage çağrısı tamamen çöküyor, veri kaybolur[1]
-- **XSS açıkları**: 9 adet `innerHTML + ${interpolation}` kombinasyonu; kullanıcı verisi sanitize edilmeden DOM'a yazılıyor[1]
-- **101 adet inline `onclick=`**: Güvenlik açığı + bakım cehennemi[1]
-- **`personelKaydet()`, `personelSil()`, `stTakimGuncelle()`, `stTakimSil()`**: 4 fonksiyon gövdesiz (boş stub!)[1]
-
-### 🟠 Mimari Sorunlar
-- **Tüm 123 fonksiyon tek `<script>` bloğunda**: Spaghetti code, sıfır modülarite[1]
-- **426 adet inline `style=""`**: CSS yönetimi imkânsız, override edilemez[1]
-- **Dark mode yok**: `prefers-color-scheme` veya toggle hiç yok[1]
-- **Firebase import var ama kullanılmıyor**: Ölü kod + performans kaybı[1]
-
-### 🟡 UX/UI Sorunları
-- Mobile `--sidebar-w: 54px` sadece ikonlara küçülüyor ama ikonlar da gösterilmiyor
-- Emoji ikon kullanımı (🏗️ 📋 📊 💰) — profesyonel görünüm yerine oyuncak his
-- `font-family: 'Syne'` ve `'DM Sans'` karışık, tutarsız hiyerarşi[1]
-- Toast mesajları XSS riski taşıyor; `mesaj` sanitize edilmiyor[1]
-- Hava durumu API'si `async function havaDurumuBaşlat()` hata yönetimi yok
-
-***
-
-## 2. İyileştirme Planı
-
-| Alan | Sorun | Çözüm |
-|---|---|---|
-| Veri | localStorage → sandbox çöker | In-memory state + JSON export |
-| Güvenlik | XSS (innerHTML + interpolation) | `textContent` + `createTextNode` |
-| CSS | 426 inline style | Design token sistemi, sıfır inline |
-| JS | 123 global fonksiyon | Module pattern, namespace |
-| UI | Dark mode yok | `data-theme` toggle + CSS vars |
-| Mobile | Sidebar bozuk | Bottom tab bar + hamburger |
-| Boş fonksiyonlar | 4 stub fonksiyon | Tam implementasyon |
-| Personel | Eksik modül | Tam personel CRUD eklendi |
-| Fotoğraf | Hiç yok | Fotoğraf yükleme modülü eklendi |
-| Bildirim | Hiç yok | Bildirim sistemi eklendi |
-
-***
-
-Şimdi tam yeniden yazılmış kodu üretiyorum:
-
-```html
 <!DOCTYPE html>
 <html lang="tr" data-theme="light">
 <head>
@@ -1838,6 +1789,3 @@ table.tablo {
           <label class="form-label" for="maliyet-tutar">Tutar (₺) *</label>
           <input type="number" class="form-control" id="maliyet-tutar" min="0" step="0.01" placeholder="0.00">
           <div class="form-error" id="err-maliyet-tutar">Geçerli bir tu
-
-Kaynaklar
-[1] index-3.html https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/508833076/9ae53a8c-88a0-4db7-8bb4-01a5805fc704/index-3.html?AWSAccessKeyId=ASIA2F3EMEYEYI6AQHJ6&Signature=FT3W5C4kbjPx7If%2BAYZ43GbZnQs%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEBcaCXVzLWVhc3QtMSJHMEUCIQDlNbE793WCLafC6md20004l2RunYTGqiaEAFgmdx2eTwIgShCRBayReS4%2Fr0er9AcsNg%2F%2FczE2SvFBTdFfA8a24xAq%2FAQI3%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARABGgw2OTk3NTMzMDk3MDUiDPaii9xb4sLD5YxW5SrQBP3inrz68L855P1QDx0uDTUqn0Hq7iinOYQSwnMIh969nhsI%2F5%2BARqocUnYLIr%2BnyJb8DA3%2FulTi8TiPGIOTR6TEEU%2BZi4CFeuck6FmDSbc5Q91zM%2B5rMAWe3QTdAxJ%2BgNfiOCHEvw%2FLFE636oNnhVydMNhC%2FGA4BUPWYUnCeaxQj4zXV5cht%2FzW%2BVv8b056cQJLPe8ea7nfD1lPBEyzrKIw0e3%2FSDZK4ye4KH5kx9uZ1AUkN0Kchjow8Gu7QHR5AEyxQxjF5eUe3%2BrEisVRlvIbQ2zXySJEYT8xXmIISKyAqsjuxN1FfaITW1dwH0Uf8HDhLeRWFyBEQFGyKcF4ZWKUL3mRy3o39cFRCKR8o4t9hcrqbGVqzWfK3RAVeme3Lu79Ei6CVs6KjifHUrT7hYNGP4sPbQRN82fUhZOHsXS80Th7EBUanmWrF2203fQeyYp1C85lpLO0eshokt%2FEnRE1oU0Z7233N5LMYKVIJo3%2BRImJoUFbGn0PrWG5FOO5eFyIKBpZJ6RwbseNb%2FBnduqUliuGQXgq31tomZP7PgycuaH9%2BGP2VGvYDy%2BX4BH8DjARVKakKgjBf02t2e1MoA5BINvrJxGQB3zFYJE16ko9esSY%2FGEJhgSWWk%2FUSC8Qy6rI09IdIA4D6EOdv5sxPeu%2BjSgn2cCqLNIZ9XPvevX55rYTXo6RlKa0SyMNbaFaAFBaIxDsW7%2FZRSK%2Bi1sG5J2mAKr0wBTaT%2BKXzPYn0skYctgnW1SCCu%2BgouzdngTmbk4ZARZ%2FVKdEPbTyChoG7rUws%2BOKzwY6mAGiIBSElMH011vTVgTq%2BkMUHa9MzPL%2FUUV0g2fwBwpYZUKgwnKiigq76g0km7c%2B21BQqpZSyLAfy76ZNUmXWfg%2FVRnu%2BcbJ6Guqag3fU%2FXfLsUfqsn6W497s%2Fw7CaVvq%2FCeQbVgyMv7Rd6AyQCXACDlyUqdvYIiCE4MWBPvffVS92TCtsK4%2Fv5LchMU4EAKfEKD9PUYDv7CUg%3D%3D&Expires=1776465099
