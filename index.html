@@ -1,40 +1,119 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="light">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Şantiye Pro</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    /* PARÇA 2 buraya gelecek */
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şantiye Pro | Paprika Yönetim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item:hover { background: rgba(255,255,255,0.1); }
+        .active-tab { background: #2563eb !important; color: white !important; }
+    </style>
 </head>
-<body>
-  <a class="skip-link" href="#main">İçeriğe geç</a>
+<body class="bg-slate-50 text-slate-900">
 
-  <div class="app">
-    <aside class="sidebar" aria-label="Ana menü">
-      <div class="brand">
-        <div class="brand__logo" aria-hidden="true">ŞP</div>
-        <div>
-          <strong>Şantiye Pro</strong>
-          <small>Operasyon Paneli</small>
+<div class="flex min-h-screen">
+    <aside class="w-64 bg-slate-900 text-white p-6 hidden md:flex flex-col">
+        <div class="mb-10">
+            <h1 class="text-2xl font-bold tracking-tight text-blue-400">ŞANTİYE<span class="text-white">PRO</span></h1>
+            <p class="text-xs text-slate-400">Paprika Reklam & İnşaat</p>
         </div>
-      </div>
+        <nav class="space-y-2 flex-1">
+            <button onclick="tabDegistir('dashboard')" id="btn-dashboard" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-xl transition-all">
+                <i data-lucide="layout-dashboard"></i> Panel
+            </button>
+            <button onclick="tabDegistir('personel')" id="btn-personel" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400">
+                <i data-lucide="users"></i> Personel Takip
+            </button>
+            <button onclick="tabDegistir('stok')" id="btn-stok" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400">
+                <i data-lucide="package"></i> Malzeme / Stok
+            </button>
+        </nav>
+        <div class="pt-6 border-t border-slate-800">
+            <div class="flex items-center gap-3 p-2">
+                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">Yİ</div>
+                <div>
+                    <p class="text-sm font-medium">Yakup İlhan</p>
+                    <p class="text-[10px] text-slate-400">Yönetici</p>
+                </div>
+            </div>
+        </div>
+    </aside>
 
-      <nav class="nav" id="sidebarNav">
-        <button class="nav__item is-active" data-route="dashboard">Dashboard</button>
-        <button class="nav__item" data-route="dailyReports">Günlük Rapor</button>
-        <button class="nav__item" data-route="tasks">Görevler</button>
-        <button class="nav__item" data-route="personnel">Personel</button>
-        <button class="nav__item" data-route="inventory">Stok</button>
+    <main class="flex-1 p-4 md:p-10 overflow-y-auto">
+        <div id="tab-dashboard">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-blue-600 mb-4"><i data-lucide="user-plus"></i></div>
+                    <p class="text-slate-500 text-sm font-medium">Aktif Personel</p>
+                    <h2 class="text-3xl font-bold mt-1" id="dash-personel-sayi">0</h2>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-orange-600 mb-4"><i data-lucide="hard-hat"></i></div>
+                    <p class="text-slate-500 text-sm font-medium">Bekleyen İşler</p>
+                    <h2 class="text-3xl font-bold mt-1" id="dash-is-sayi">0</h2>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-green-600 mb-4"><i data-lucide="trending-up"></i></div>
+                    <p class="text-slate-500 text-sm font-medium">Tamamlanma Oranı</p>
+                    <h2 class="text-3xl font-bold mt-1">%75</h2>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-lg mb-4">Son Hareketler</h3>
+                <div id="liste-ozet" class="space-y-4">
+                    <p class="text-slate-400 italic">Veriler yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-personel" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Personel Listesi</h2>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">+ Yeni Ekle</button>
+            </div>
+            </div>
+    </main>
+</div>
+
+<script>
+    // 1. FIREBASE AYARLARI (Eski kodundan kopyala)
+    const firebaseConfig = {
+        apiKey: "SENIN_KEYIN",
+        authDomain: "SENIN_DOMAIN",
+        projectId: "SENIN_ID",
+        storageBucket: "SENIN_BUCKET",
+        messagingSenderId: "SENIN_SENDER",
+        appId: "SENIN_APPID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 2. TAB YÖNETİMİ
+    function tabDegistir(tabAdi) {
+        // Tüm tabları gizle
+        document.getElementById('tab-dashboard').classList.add('hidden');
+        document.getElementById('tab-personel').classList.add('hidden');
+        // Seçileni göster
+        document.getElementById('tab-' + tabAdi).classList.remove('hidden');
+        
+        // Lucide ikonlarını yenile
+        lucide.createIcons();
+    }
+
+    // İlk açılış
+    window.onload = () => {
+        lucide.createIcons();
+        tabDegistir('dashboard');
+    };
+</script>
+</body>
+</html>        <button class="nav__item" data-route="inventory">Stok</button>
         <button class="nav__item" data-route="photos">Fotoğraflar</button>
         <button class="nav__item" data-route="notifications">Bildirimler</button>
         <button class="nav__item" data-route="projects">Şantiyeler</button>
