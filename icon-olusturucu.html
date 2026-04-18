@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>İkon Oluşturucu</title>
+</head>
+<body>
+<h2>ŞantiyePro İkon Oluşturucu</h2>
+<p>Butona tıkla, tüm ikonlar otomatik oluşturulur ve indirilir.</p>
+<button onclick="ikonlariOlustur()" 
+  style="padding:12px 24px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer">
+  🏗️ İkonları Oluştur ve İndir
+</button>
+<div id="onizleme" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px"></div>
+
+<script>
+const BOYUTLAR = [72, 96, 128, 144, 152, 192, 384, 512];
+
+function ikonCiz(boyut) {
+  const canvas = document.createElement('canvas');
+  canvas.width = boyut;
+  canvas.height = boyut;
+  const ctx = canvas.getContext('2d');
+
+  // Arka plan gradient
+  const grad = ctx.createLinearGradient(0, 0, boyut, boyut);
+  grad.addColorStop(0, '#1d4ed8');
+  grad.addColorStop(1, '#2563eb');
+  ctx.fillStyle = grad;
+  const r = boyut * 0.18;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(boyut - r, 0);
+  ctx.quadraticCurveTo(boyut, 0, boyut, r);
+  ctx.lineTo(boyut, boyut - r);
+  ctx.quadraticCurveTo(boyut, boyut, boyut - r, boyut);
+  ctx.lineTo(r, boyut);
+  ctx.quadraticCurveTo(0, boyut, 0, boyut - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  // Bina ikonu
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  const bX = boyut * 0.15, bY = boyut * 0.35;
+  const bW = boyut * 0.7, bH = boyut * 0.5;
+  ctx.fillRect(bX, bY, bW, bH);
+
+  ctx.fillStyle = 'white';
+  ctx.font = `bold ${boyut * 0.42}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🏗️', boyut / 2, boyut / 2);
+
+  // Alt yazı (büyük ikonlarda)
+  if (boyut >= 128) {
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `bold ${boyut * 0.1}px sans-serif`;
+    ctx.fillText('ŞantiyePro', boyut / 2, boyut * 0.82);
+  }
+
+  return canvas;
+}
+
+function ikonlariOlustur() {
+  const onizleme = document.getElementById('onizleme');
+  onizleme.innerHTML = '';
+
+  BOYUTLAR.forEach(boyut => {
+    const canvas = ikonCiz(boyut);
+    
+    // Önizleme
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'text-align:center;font-size:11px;color:#666';
+    const small = document.createElement('canvas');
+    small.width = 80; small.height = 80;
+    small.getContext('2d').drawImage(canvas, 0, 0, 80, 80);
+    small.style.cssText = 'border:1px solid #ddd;border-radius:8px;display:block';
+    wrap.appendChild(small);
+    wrap.appendChild(document.createTextNode(`${boyut}×${boyut}`));
+    onizleme.appendChild(wrap);
+
+    // İndir
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.download = `icon-${boyut}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }, boyut * 2);
+  });
+
+  alert('✅ İkonlar indiriliyor! "icons/" klasörüne taşıyın.');
+}
+</script>
+</body>
+</html>
