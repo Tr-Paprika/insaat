@@ -350,6 +350,446 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;colo
   .giris-kutu{padding:24px 16px}
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
 }
+/* ═══════════════════════════════════════
+   P3 — YENİ MODÜLLER CSS
+═══════════════════════════════════════ */
+
+/* ── ANNO (ANNOTASYON) ───────────────── */
+.anno-btn {
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--sinir);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.anno-btn:hover { background: var(--ana-acik); border-color: var(--ana); }
+.anno-btn.aktif {
+  background: var(--ana);
+  color: white;
+  border-color: var(--ana);
+}
+#anno-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  cursor: crosshair;
+  border-radius: 10px;
+}
+#canvas-kap {
+  position: relative;
+  user-select: none;
+}
+
+/* ── TALEP KARTI ─────────────────────── */
+.talep-kart {
+  background: white;
+  border: 1.5px solid var(--sinir);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  transition: box-shadow .15s;
+}
+.talep-kart:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); }
+.talep-kart.oncelik-acil { border-left: 4px solid var(--kirmizi); }
+.talep-kart.oncelik-normal { border-left: 4px solid var(--ana); }
+.talep-kart.oncelik-dusuk { border-left: 4px solid var(--yesil); }
+
+.talep-ust {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.talep-ikon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  background: #dbeafe;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.talep-alt-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--sinir);
+  flex-wrap: wrap;
+}
+
+/* ── HAKEDİŞ KARTI ───────────────────── */
+.hakedis-kart {
+  background: white;
+  border: 1.5px solid var(--sinir);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  transition: box-shadow .15s;
+}
+.hakedis-kart:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); }
+.hakedis-kart.durum-odendi { border-left: 4px solid var(--yesil); }
+.hakedis-kart.durum-onaylandi { border-left: 4px solid #0891b2; }
+.hakedis-kart.durum-gonderildi { border-left: 4px solid var(--sari); }
+.hakedis-kart.durum-hazirlaniyor { border-left: 4px solid var(--metin-acik); }
+.hakedis-kart.durum-reddedildi { border-left: 4px solid var(--kirmizi); }
+
+/* ── BÜTÇE ───────────────────────────── */
+.butce-satir {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--sinir);
+  flex-wrap: wrap;
+}
+.butce-bar-kap {
+  flex: 1;
+  min-width: 120px;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.butce-bar-dolu {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s;
+}
+.butce-bar-asim { background: var(--kirmizi); }
+.butce-bar-normal { background: var(--yesil); }
+.butce-bar-uyari { background: var(--sari); }
+
+/* ── BORDRO ──────────────────────────── */
+.bordro-odendi { color: var(--yesil); font-weight: 700; }
+.bordro-bekliyor { color: var(--sari); font-weight: 700; }
+.bordro-gecikti { color: var(--kirmizi); font-weight: 700; }
+
+/* ── ÖZLÜK ───────────────────────────── */
+.ozluk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.ozluk-kart {
+  background: white;
+  border: 1.5px solid var(--sinir);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ozluk-kart:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,.09);
+  border-color: var(--ana);
+  transform: translateY(-2px);
+}
+.ozluk-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 10px;
+}
+.ozluk-adi {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  margin-bottom: 3px;
+}
+.ozluk-bilgi {
+  font-size: .75rem;
+  color: var(--metin-acik);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ozluk-detay-kart {
+  background: white;
+  border: 1.5px solid var(--sinir);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* ── MESAİ ───────────────────────────── */
+.mesai-fazla { color: var(--kirmizi); font-weight: 700; }
+.mesai-normal { color: var(--yesil); font-weight: 700; }
+
+/* ── GRAFİK ──────────────────────────── */
+.grafik-kap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+/* ── SUPABASE ────────────────────────── */
+.sb-bagli {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  color: #15803d;
+  font-weight: 600;
+  font-size: .84rem;
+}
+.sb-bagli-degil {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  border-radius: 10px;
+  color: #854d0e;
+  font-weight: 600;
+  font-size: .84rem;
+}
+.sb-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.sb-dot-yesil { background: #16a34a; }
+.sb-dot-sari { background: #ca8a04; }
+
+/* ── ÖZET KART (YENİ) ────────────────── */
+.ozet-kart {
+  background: white;
+  border: 1.5px solid var(--sinir);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  transition: box-shadow .15s;
+}
+.ozet-kart:hover { box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+
+/* ── NAKIT AKIŞ ──────────────────────── */
+.nakit-pozitif { color: var(--yesil); font-weight: 700; }
+.nakit-negatif { color: var(--kirmizi); font-weight: 700; }
+
+/* ── BADGE YENİ ──────────────────────── */
+.badge-mor {
+  background: #f3e8ff;
+  color: #6b21a8;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 600;
+}
+.badge-turuncu {
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+/* ── TABLO YENİ ──────────────────────── */
+.tablo tfoot td {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .87rem;
+  background: #f8fafc;
+  border-top: 2px solid var(--sinir);
+  padding: 10px 12px;
+}
+
+/* ── MOBİL DÜZENLEMELER ──────────────── */
+@media (max-width: 768px) {
+  .ozluk-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  .anno-btn { width: 30px; height: 30px; font-size: .8rem; }
+  #anno-ara-cubugu { gap: 4px; }
+  .talep-ust { flex-direction: column; }
+  .hakedis-kart { padding: 12px; }
+}
+
+/* ── PWA BANNER ──────────────────────── */
+.pwa-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1.5px solid var(--sinir);
+  border-radius: 14px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  font-size: .84rem;
+  max-width: 360px;
+  width: calc(100% - 32px);
+  animation: slideUp .3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ── ÇEVRIMDIŞI BANNER ───────────────── */
+.offline-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #854d0e;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-size: .82rem;
+  font-weight: 600;
+  z-index: 99999;
+  display: none;
+}
+.offline-banner.goster { display: block; }
+
+/* ── BAĞLANTI DURUM ──────────────────── */
+#baglanti-durum {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .78rem;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: 600;
+  transition: all .3s;
+}
+
+/* ── CHART CONTAINER ─────────────────── */
+.chart-container {
+  position: relative;
+  height: 240px;
+  width: 100%;
+}
+
+/* ── HAKEDİŞ PDF STILI ───────────────── */
+@media print {
+  .sidebar, .topbar, .nav-tab, .btn,
+  .modal-overlay, #toast-kap, .pwa-banner,
+  #baglanti-durum, #notif-panel { display: none !important; }
+  .content { margin: 0 !important; }
+  .kart { break-inside: avoid; }
+  body { background: white !important; }
+}
+
+/* ── ANİMASYONLAR ────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sayfa.aktif > * {
+  animation: fadeInUp .25s ease forwards;
+}
+
+/* ── STOK KULLANIM FORMU ─────────────── */
+.stok-kullan-btn {
+  padding: 4px 10px;
+  background: #fef9c3;
+  border: 1.5px solid #fde047;
+  border-radius: 7px;
+  font-size: .75rem;
+  font-weight: 600;
+  color: #854d0e;
+  cursor: pointer;
+  transition: all .15s;
+}
+.stok-kullan-btn:hover {
+  background: #fde047;
+  color: #713f12;
+}
+
+/* ── ENTEGRASYOn LOG ─────────────────── */
+.enteg-log {
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: .78rem;
+  color: #15803d;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.enteg-log-uyari {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #854d0e;
+}
+
+/* ── ISP TABLO GENİŞLETME ────────────── */
+.isp-tablo-kap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1.5px solid var(--sinir);
+}
+.isp-tablo {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: .78rem;
+}
+.isp-tablo th, .isp-tablo td {
+  border: 1px solid var(--sinir);
+  padding: 6px 4px;
+  white-space: nowrap;
+}
+.isp-tablo th {
+  background: var(--ana);
+  color: white;
+  font-family: 'Syne', sans-serif;
+  text-align: center;
+  position: sticky;
+  top: 0;
+}
+.isp-tablo th.col-adi {
+  text-align: left;
+  min-width: 180px;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+.isp-tablo td.col-adi {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 1;
+  font-weight: 600;
+}
+.hafta-kare {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--sinir);
+  margin: 0 auto;
+  cursor: pointer;
+  transition: all .12s;
+}
+.hafta-kare:hover { border-color: var(--ana); background: var(--ana-acik); }
+.hafta-kare.secili { background: var(--ana); border-color: var(--ana); }
+.isp-kalem-input {
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .78rem;
+  width: 100%;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.isp-kalem-input:focus {
+  outline: 2px solid var(--ana);
+  background: white;
+}
 </style>
 </head>
 <body>
@@ -889,7 +1329,283 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;colo
         </div>
         <div class="kart"><div id="audit-liste"></div></div>
       </div>
+<!-- ═══ İÇ TALEP ═══ -->
+<div id="sayfa-ic-talep" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">📋 İç Talep</div>
+    <button class="btn btn-primary" onclick="modalAc('modal-ic-talep')">＋ Yeni Talep</button>
+  </div>
+  <div class="grid-4" id="talep-istatistik" style="margin-bottom:14px"></div>
+  <div class="kart" style="margin-bottom:14px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="talep-filtre-santiye" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="talepGoster()">
+        <option value="">Tüm Şantiyeler</option>
+      </select>
+      <select id="talep-filtre-durum" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="talepGoster()">
+        <option value="">Tüm Durumlar</option>
+        <option value="bekliyor">Bekliyor</option>
+        <option value="onaylandi">Onaylandı</option>
+        <option value="teslim">Teslim Edildi</option>
+        <option value="iptal">İptal</option>
+      </select>
+    </div>
+  </div>
+  <div id="talep-liste"></div>
+</div>
 
+<!-- ═══ HAKEDİŞ ═══ -->
+<div id="sayfa-hakedis" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">🧾 Hakediş & Fatura</div>
+    <button class="btn btn-primary" onclick="modalAc('modal-hakedis')">＋ Yeni Hakediş</button>
+    <button class="btn btn-secondary btn-sm" onclick="hakedisExcel()">📊 Excel</button>
+  </div>
+  <div class="grid-4" id="hakedis-ozet" style="margin-bottom:14px"></div>
+  <div class="kart" style="margin-bottom:14px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="hak-filtre-santiye" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="hakedisGoster()">
+        <option value="">Tüm Şantiyeler</option>
+      </select>
+      <select id="hak-filtre-durum" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="hakedisGoster()">
+        <option value="">Tüm Durumlar</option>
+        <option value="hazirlaniyor">Hazırlanıyor</option>
+        <option value="gonderildi">Gönderildi</option>
+        <option value="onaylandi">Onaylandı</option>
+        <option value="odendi">Ödendi</option>
+        <option value="reddedildi">Reddedildi</option>
+      </select>
+    </div>
+  </div>
+  <div id="hakedis-liste"></div>
+</div>
+
+<!-- ═══ BÜTÇE ═══ -->
+<div id="sayfa-butce" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">📊 Bütçe Takibi</div>
+    <select id="butce-santiye-sec" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="butceHazirla()">
+      <option value="">Şantiye Seçin</option>
+    </select>
+    <button class="btn btn-primary" onclick="modalAc('modal-butce')">＋ Bütçe Ekle</button>
+  </div>
+  <div class="grid-4" id="butce-ozet" style="margin-bottom:14px"></div>
+  <div class="grid-2">
+    <div class="kart">
+      <div class="kart-baslik">📈 Bütçe vs Gerçekleşen</div>
+      <canvas id="butce-grafik" height="220"></canvas>
+    </div>
+    <div class="kart">
+      <div class="kart-baslik">💸 Nakit Akış Tahmini</div>
+      <canvas id="nakit-grafik" height="220"></canvas>
+    </div>
+  </div>
+  <div class="kart" style="margin-top:0">
+    <div class="kart-baslik">📋 Bütçe Kalemleri</div>
+    <div id="butce-liste"></div>
+  </div>
+</div>
+
+<!-- ═══ BORDRO ═══ -->
+<div id="sayfa-bordro" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">💵 Maaş Bordrosu</div>
+    <select id="bordro-ay-sec" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="bordroHazirla()"></select>
+    <select id="bordro-santiye-sec" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="bordroHazirla()">
+      <option value="">Tüm Şantiyeler</option>
+    </select>
+    <button class="btn btn-primary" onclick="bordroPdfIndir()">🖨️ PDF</button>
+    <button class="btn btn-secondary btn-sm" onclick="bordroExcel()">📊 Excel</button>
+  </div>
+  <div class="grid-4" id="bordro-ozet" style="margin-bottom:14px"></div>
+  <div class="kart">
+    <div class="tablo-kap">
+      <table class="tablo">
+        <thead>
+          <tr>
+            <th>Personel</th>
+            <th>Meslek</th>
+            <th>Çalışma Günü</th>
+            <th>Mesai (saat)</th>
+            <th>Brüt Maaş</th>
+            <th>SGK (%14)</th>
+            <th>Gelir Vergisi</th>
+            <th>Net Maaş</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="bordro-tablo"></tbody>
+        <tfoot id="bordro-toplam"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ÖZLÜK ═══ -->
+<div id="sayfa-ozluk" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">👤 Personel Özlük</div>
+    <input type="text" id="ozluk-ara" placeholder="🔍 Personel ara..." style="padding:7px 12px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" oninput="ozlukGoster()">
+    <select id="ozluk-santiye-filtre" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="ozlukGoster()">
+      <option value="">Tüm Şantiyeler</option>
+    </select>
+  </div>
+  <div id="ozluk-grid"></div>
+  <!-- Özlük Detay Panel -->
+  <div id="ozluk-detay" style="display:none;margin-top:16px"></div>
+</div>
+
+<!-- ═══ MESAI ═══ -->
+<div id="sayfa-mesai" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">⏱️ Mesai Takibi</div>
+    <button class="btn btn-primary" onclick="modalAc('modal-mesai')">＋ Mesai Ekle</button>
+    <button class="btn btn-secondary btn-sm" onclick="mesaiExcel()">📊 Excel</button>
+  </div>
+  <div class="kart" style="margin-bottom:14px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="mesai-filtre-santiye" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="mesaiGoster()">
+        <option value="">Tüm Şantiyeler</option>
+      </select>
+      <input type="month" id="mesai-filtre-ay" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem" onchange="mesaiGoster()">
+    </div>
+  </div>
+  <div class="kart">
+    <div class="tablo-kap">
+      <table class="tablo">
+        <thead><tr><th>Personel</th><th>Tarih</th><th>Normal (saat)</th><th>Mesai (saat)</th><th>Şantiye</th><th>Not</th><th>İşlem</th></tr></thead>
+        <tbody id="mesai-tablo"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GELİŞMİŞ RAPORLAR ═══ -->
+<div id="sayfa-gelismis-rapor" class="sayfa">
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;flex:1">📈 Gelişmiş Raporlar</div>
+    <button class="btn btn-primary" onclick="tumRaporPdf()">🖨️ PDF</button>
+    <button class="btn btn-secondary btn-sm" onclick="tumRaporExcel()">📊 Excel</button>
+  </div>
+  <div class="grid-2" style="margin-bottom:0">
+    <div class="kart">
+      <div class="kart-baslik">🏗️ Şantiye İlerleme</div>
+      <canvas id="rapor-ilerleme-grafik" height="240"></canvas>
+    </div>
+    <div class="kart">
+      <div class="kart-baslik">💰 Aylık Maliyet</div>
+      <canvas id="rapor-maliyet-grafik" height="240"></canvas>
+    </div>
+    <div class="kart">
+      <div class="kart-baslik">👷 Yoklama Özeti</div>
+      <canvas id="rapor-yoklama-grafik" height="240"></canvas>
+    </div>
+    <div class="kart">
+      <div class="kart-baslik">📦 Stok Durumu</div>
+      <canvas id="rapor-stok-grafik" height="240"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ KAMERA ═══ -->
+<div id="sayfa-kamera" class="sayfa">
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:16px">📷 Kamera & Annotasyon</div>
+  <div class="grid-2">
+    <div class="kart">
+      <div class="kart-baslik">📸 Fotoğraf Çek / Yükle</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <select id="kamera-santiye" style="flex:1;padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem">
+          <option value="">Şantiye Seçin</option>
+        </select>
+        <select id="kamera-kategori" style="padding:7px 10px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.83rem">
+          <option value="genel">Genel</option>
+          <option value="ilerleme">İlerleme</option>
+          <option value="hasar">Hasar/Sorun</option>
+          <option value="guvenlik">Güvenlik</option>
+        </select>
+      </div>
+      <!-- Canlı Kamera -->
+      <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;margin-bottom:10px;min-height:200px">
+        <video id="kamera-video" autoplay playsinline style="width:100%;display:none;border-radius:12px"></video>
+        <div id="kamera-kapali" style="display:flex;align-items:center;justify-content:center;min-height:200px;color:white;font-size:.9rem;flex-direction:column;gap:8px">
+          <span style="font-size:2rem">📷</span>
+          <span>Kamera kapalı</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn btn-primary" onclick="kameraAc()" id="kamera-ac-btn">📷 Kamera Aç</button>
+        <button class="btn btn-success" onclick="fotografCek()" id="cek-btn" style="display:none">📸 Çek</button>
+        <button class="btn btn-danger btn-sm" onclick="kameraKapat()" id="kamera-kapat-btn" style="display:none">✕ Kapat</button>
+        <label class="btn btn-secondary" style="cursor:pointer">
+          📁 Dosyadan Seç
+          <input type="file" accept="image/*" style="display:none" onchange="dosyadanYukle(this)">
+        </label>
+      </div>
+      <input type="text" id="kamera-aciklama" placeholder="Fotoğraf açıklaması..." style="width:100%;padding:9px 12px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.87rem;box-sizing:border-box">
+    </div>
+
+    <div class="kart">
+      <div class="kart-baslik">✏️ Annotasyon Araçları</div>
+      <div id="anno-ara-cubugu" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:10px;background:#f8fafc;border-radius:10px;border:1px solid var(--sinir)">
+        <button class="anno-btn aktif" id="anno-ciz" onclick="annoAracSec('kalem',this)" title="Kalem">✏️</button>
+        <button class="anno-btn" id="anno-ok" onclick="annoAracSec('ok',this)" title="Ok">➡️</button>
+        <button class="anno-btn" id="anno-daire" onclick="annoAracSec('daire',this)" title="Daire">⭕</button>
+        <button class="anno-btn" id="anno-kare" onclick="annoAracSec('kare',this)" title="Dikdörtgen">⬜</button>
+        <button class="anno-btn" id="anno-yazi" onclick="annoAracSec('yazi',this)" title="Yazı">T</button>
+        <div style="width:1px;background:var(--sinir);margin:0 4px"></div>
+        <input type="color" id="anno-renk" value="#ef4444" title="Renk" style="width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;padding:2px">
+        <select id="anno-kalinlik" style="padding:4px 6px;border:1.5px solid var(--sinir);border-radius:6px;font-size:.78rem">
+          <option value="2">İnce</option>
+          <option value="4" selected>Orta</option>
+          <option value="8">Kalın</option>
+        </select>
+        <div style="margin-left:auto;display:flex;gap:5px">
+          <button class="anno-btn" onclick="annoGeriAl()" title="Geri Al">↩️</button>
+          <button class="anno-btn" onclick="annoTemizle()" title="Temizle">🗑️</button>
+        </div>
+      </div>
+      <div style="position:relative;border:2px dashed var(--sinir);border-radius:10px;overflow:hidden;min-height:280px;background:#f8fafc;display:flex;align-items:center;justify-content:center" id="canvas-kap">
+        <canvas id="anno-canvas"></canvas>
+        <div id="canvas-bos" style="color:var(--metin-acik);font-size:.85rem;text-align:center">
+          <div style="font-size:2rem;margin-bottom:6px">🖼️</div>
+          Fotoğraf çek veya yükle<br>sonra işaretleme yap
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="annotasyonluKaydet()">💾 Kaydet</button>
+        <button class="btn btn-secondary btn-sm" onclick="annotasyonIndir()">⬇️ İndir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUPABASE AYARLARI ═══ -->
+<div id="sayfa-supabase" class="sayfa">
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:16px">☁️ Bulut Senkronizasyon</div>
+  <div class="grid-2">
+    <div class="kart">
+      <div class="kart-baslik">🔧 Supabase Bağlantısı</div>
+      <div style="background:#fef9c3;border:1px solid #fde047;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem">
+        ⚠️ Supabase hesabı için <a href="https://supabase.com" target="_blank" style="color:var(--ana)">supabase.com</a>'a gidin, ücretsiz proje oluşturun.
+      </div>
+      <div class="form-group"><label>Supabase URL</label><input type="text" id="sb-url" placeholder="https://xxxx.supabase.co"></div>
+      <div class="form-group"><label>Anon Key</label><input type="password" id="sb-key" placeholder="eyJhbGci..."></div>
+      <button class="btn btn-primary btn-block" onclick="supabaseBaglan()">🔌 Bağlan & Test Et</button>
+      <div id="sb-durum" style="margin-top:10px"></div>
+    </div>
+    <div class="kart">
+      <div class="kart-baslik">🔄 Senkronizasyon</div>
+      <div id="sb-sync-durum" style="margin-bottom:14px"></div>
+      <button class="btn btn-primary btn-block" onclick="supabaseYukle()" style="margin-bottom:8px">⬆️ Buluta Yükle</button>
+      <button class="btn btn-secondary btn-block" onclick="supabaseIndir()">⬇️ Buluttan İndir</button>
+      <div style="margin-top:14px">
+        <div class="kart-baslik">🗄️ Veritabanı Kurulumu</div>
+        <div style="font-size:.8rem;color:var(--metin-acik);margin-bottom:8px">Supabase SQL Editor'de çalıştır:</div>
+        <button class="btn btn-secondary btn-sm btn-block" onclick="sqlKopyala()">📋 SQL Şemasını Kopyala</button>
+      </div>
+    </div>
+  </div>
+</div>
     </div><!-- /main -->
   </div><!-- /content -->
 </div><!-- /app-shell -->
@@ -3086,5 +3802,108 @@ document.addEventListener('keydown',e=>{
 })();
 </script>
 <script src="pwa-init.js"></script>
+  <!-- İç Talep Modal -->
+<div class="modal-overlay" id="modal-ic-talep">
+  <div class="modal">
+    <div class="modal-baslik">📋 İç Talep <button class="modal-kapat" onclick="modalKapat('modal-ic-talep')">✕</button></div>
+    <input type="hidden" id="it-id">
+    <div class="form-group"><label>Malzeme / Hizmet *</label><input type="text" id="it-adi" placeholder="Ne talep ediliyor..."></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Miktar</label><input type="number" id="it-miktar" min="1" value="1"></div>
+      <div class="form-group"><label>Birim</label>
+        <select id="it-birim">
+          <option value="adet">Adet</option><option value="kg">kg</option>
+          <option value="ton">Ton</option><option value="m2">m²</option>
+          <option value="m3">m³</option><option value="lt">Litre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Şantiye</label><select id="it-santiye"><option value="">— Seçin —</option></select></div>
+      <div class="form-group"><label>Öncelik</label>
+        <select id="it-oncelik">
+          <option value="normal">Normal</option>
+          <option value="acil">🔴 Acil</option>
+          <option value="dusuk">Düşük</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Talep Tarihi</label><input type="date" id="it-tarih"></div>
+      <div class="form-group"><label>Gereklilik Tarihi</label><input type="date" id="it-gereklilik"></div>
+    </div>
+    <div class="form-group"><label>Açıklama</label><textarea id="it-aciklama" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.87rem"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="talepKaydet()">💾 Kaydet</button>
+  </div>
+</div>
+
+<!-- Hakediş Modal -->
+<div class="modal-overlay" id="modal-hakedis">
+  <div class="modal">
+    <div class="modal-baslik">🧾 Hakediş <button class="modal-kapat" onclick="modalKapat('modal-hakedis')">✕</button></div>
+    <input type="hidden" id="hak-id">
+    <div class="form-group"><label>Hakediş No *</label><input type="text" id="hak-no" placeholder="HAK-2024-001"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Şantiye</label><select id="hak-santiye"><option value="">— Seçin —</option></select></div>
+      <div class="form-group"><label>Dönem</label><input type="month" id="hak-donem"></div>
+      <div class="form-group"><label>Tutar (₺)</label><input type="number" id="hak-tutar" min="0" step="0.01"></div>
+      <div class="form-group"><label>KDV (%)</label>
+        <select id="hak-kdv">
+          <option value="0">%0</option>
+          <option value="10">%10</option>
+          <option value="20" selected>%20</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Tarih</label><input type="date" id="hak-tarih"></div>
+      <div class="form-group"><label>Durum</label>
+        <select id="hak-durum">
+          <option value="hazirlaniyor">Hazırlanıyor</option>
+          <option value="gonderildi">Gönderildi</option>
+          <option value="onaylandi">Onaylandı</option>
+          <option value="odendi">Ödendi</option>
+          <option value="reddedildi">Reddedildi</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Açıklama</label><textarea id="hak-aciklama" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.87rem"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="hakedisKaydet()">💾 Kaydet</button>
+  </div>
+</div>
+
+<!-- Bütçe Modal -->
+<div class="modal-overlay" id="modal-butce">
+  <div class="modal">
+    <div class="modal-baslik">📊 Bütçe Kalemi <button class="modal-kapat" onclick="modalKapat('modal-butce')">✕</button></div>
+    <input type="hidden" id="bt-id">
+    <div class="form-group"><label>Kalem Adı *</label><input type="text" id="bt-adi" placeholder="Temel beton, İşçilik..."></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Kategori</label>
+        <select id="bt-kategori">
+          <option value="malzeme">Malzeme</option>
+          <option value="iscilik">İşçilik</option>
+          <option value="ekipman">Ekipman</option>
+          <option value="genel">Genel Gider</option>
+          <option value="diger">Diğer</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Şantiye</label><select id="bt-santiye"><option value="">— Seçin —</option></select></div>
+      <div class="form-group"><label>Planlanan Bütçe (₺)</label><input type="number" id="bt-planlanan" min="0" step="0.01"></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="butceKaydet()">💾 Kaydet</button>
+  </div>
+</div>
+
+<!-- Mesai Modal -->
+<div class="modal-overlay" id="modal-mesai">
+  <div class="modal">
+    <div class="modal-baslik">⏱️ Mesai Kaydı <button class="modal-kapat" onclick="modalKapat('modal-mesai')">✕</button></div>
+    <input type="hidden" id="ms2-id">
+    <div class="grid-2">
+      <div class="form-group"><label>Personel</label><select id="ms2-personel"><option value="">— Seçin —</option></select></div>
+      <div class="form-group"><label>Şantiye</label><select id="ms2-santiye"><option value="">— Seçin —</option></select></div>
+      <div class="form-group"><label>Tarih</label><input type="date" id="ms2-tarih"></div>
+      <div class="form-group"><label>Normal (saat)</label><input type="number" id="ms2-normal" min="0" max="24" step="0.5" value="8"></div>
+      <div class="form-group"><label>Mesai (saat)</label><input type="number" id="ms2-mesai" min="0" max="12" step="0.5" value="0"></div>
+    </div>
+    <div class="form-group"><label>Not</label><input type="text" id="ms2-not" placeholder="Yapılan işler..."></div>
+    <button class="btn btn-primary btn-block" onclick="mesaiKaydet()">💾 Kaydet</button>
+  </div>
+</div>
 </body>
 </html>
