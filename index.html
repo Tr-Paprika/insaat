@@ -1,2424 +1,1377 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="light">
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ŞantiYe Pro — Yönetim Sistemi</title>
-<meta name="description" content="Profesyonel şantiye yönetim platformu">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+<title>ŞantiyePro — Yönetim Sistemi</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
-/* ════════════════════════════════════════
-   DESIGN TOKENS — CSS Custom Properties
-   ════════════════════════════════════════ */
-:root {
-  /* Brand */
-  --primary:       #2563eb;
-  --primary-light: #eff6ff;
-  --primary-mid:   #bfdbfe;
-  --primary-dark:  #1d4ed8;
-
-  /* Semantics */
-  --success:       #16a34a;
-  --success-light: #f0fdf4;
-  --danger:        #dc2626;
-  --danger-light:  #fef2f2;
-  --warning:       #d97706;
-  --warning-light: #fffbeb;
-  --info:          #0891b2;
-  --info-light:    #ecfeff;
-
-  /* Neutrals */
-  --text-primary:  #0f172a;
-  --text-secondary:#64748b;
-  --text-muted:    #94a3b8;
-  --border:        #e2e8f0;
-  --border-focus:  #93c5fd;
-  --surface:       #f8fafc;
-  --card:          #ffffff;
-  --header-bg:     #0f2342;
-
-  /* Dimensions */
-  --sidebar-w:     240px;
-  --header-h:      60px;
-  --radius-sm:     6px;
-  --radius-md:     10px;
-  --radius-lg:     14px;
-  --radius-xl:     20px;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(15,23,42,.06);
-  --shadow-sm: 0 1px 4px rgba(15,23,42,.08), 0 4px 16px rgba(15,23,42,.04);
-  --shadow-md: 0 4px 16px rgba(15,23,42,.1), 0 1px 4px rgba(15,23,42,.06);
-  --shadow-lg: 0 8px 32px rgba(15,23,42,.14);
-
-  /* Transitions */
-  --t-fast: 0.12s ease;
-  --t-mid:  0.22s ease;
-  --t-slow: 0.35s cubic-bezier(.4,0,.2,1);
-}
-
-/* Dark Mode */
-[data-theme="dark"] {
-  --primary:        #3b82f6;
-  --primary-light:  #1e3a5f;
-  --primary-mid:    #1e40af;
-  --text-primary:   #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted:     #64748b;
-  --border:         #1e293b;
-  --border-focus:   #3b82f6;
-  --surface:        #0f172a;
-  --card:           #1e293b;
-  --header-bg:      #020617;
-}
-
-/* ════════════════════════════════════════
-   RESET & BASE
-   ════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--surface);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ════════════════════════════════════════
-   ANIMATIONS
-   ════════════════════════════════════════ */
-@keyframes fadeSlideIn  { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
-@keyframes slideInRight { from { transform:translateX(100%); } to { transform:translateX(0); } }
-@keyframes slideInLeft  { from { transform:translateX(-100%); } to { transform:translateX(0); } }
-@keyframes pulse        { 0%,100%{opacity:1} 50%{opacity:.4} }
-@keyframes spin         { to { transform:rotate(360deg); } }
-@keyframes scaleIn      { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
-@keyframes toastIn      { from{opacity:0;transform:translateX(110%)} to{opacity:1;transform:translateX(0)} }
-@keyframes toastOut     { to{opacity:0;transform:translateX(110%)} }
-
-/* ════════════════════════════════════════
-   LOGIN SCREEN
-   ════════════════════════════════════════ */
-#login-screen {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f2342 0%, #1a3a6b 50%, #1e40af 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.login-card {
-  background: var(--card);
-  border-radius: var(--radius-xl);
-  padding: 44px 40px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: var(--shadow-lg);
-  animation: scaleIn 0.3s ease;
-}
-
-.login-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-
-.login-logo-icon {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 4px 14px rgba(37,99,235,.4);
-}
-
-.login-logo-text { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
-.login-logo-text span { color: var(--primary); }
-
-.login-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
-.login-sub   { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 28px; }
-
-.pin-dots {
-  display: flex; gap: 12px; justify-content: center;
-  margin: 20px 0;
-}
-
-.pin-dot {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  transition: var(--t-fast);
-}
-
-.pin-dot.filled {
-  background: var(--primary);
-  border-color: var(--primary);
-  transform: scale(1.15);
-}
-
-.pin-pad {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.pin-btn {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--t-fast);
-  color: var(--text-primary);
-}
-
-.pin-btn:hover  { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
-.pin-btn:active { transform: scale(.95); }
-.pin-btn.del    { font-size: 1rem; }
-.pin-btn.wide   { grid-column: span 3; }
-
-/* ════════════════════════════════════════
-   APP SHELL
-   ════════════════════════════════════════ */
-#app {
-  display: none;
-  min-height: 100vh;
-}
-
-#app.visible { display: flex; }
-
-/* SIDEBAR */
-.sidebar {
-  width: var(--sidebar-w);
-  flex-shrink: 0;
-  background: linear-gradient(180deg, var(--header-bg) 0%, #162d55 100%);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  z-index: 200;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-shadow: 4px 0 24px rgba(0,0,0,.15);
-  transition: width var(--t-slow), transform var(--t-slow);
-}
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  flex-shrink: 0;
-}
-
-.sidebar-logo-icon {
-  width: 34px; height: 34px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 10px rgba(59,130,246,.4);
-  flex-shrink: 0;
-}
-
-.sidebar-logo-text {
-  font-size: 1rem;
-  font-weight: 800;
-  color: white;
-  white-space: nowrap;
-}
-
-.sidebar-logo-text span { color: #60a5fa; }
-
-.sidebar-section-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(255,255,255,.3);
-  padding: 16px 16px 6px;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: rgba(255,255,255,.55);
-  font-size: 0.84rem;
-  font-weight: 500;
-  font-family: inherit;
-  transition: var(--t-fast);
-  text-align: left;
-  width: 100%;
-  white-space: nowrap;
-  position: relative;
-}
-
-.nav-item:hover  { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
-.nav-item.active {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 2px 12px rgba(59,130,246,.35);
-}
-
-.nav-item .nav-icon { font-size: 1rem; flex-shrink: 0; width: 20px; text-align: center; }
-.nav-item .nav-label { flex: 1; }
-
-.nav-badge {
-  background: #ef4444;
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 20px;
-  min-width: 18px;
-  text-align: center;
-}
-
-.sidebar-footer {
-  padding: 12px;
-  border-top: 1px solid rgba(255,255,255,.08);
-  flex-shrink: 0;
-}
-
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: var(--t-fast);
-}
-
-.user-card:hover { background: rgba(255,255,255,.07); }
-
-.user-avatar {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #7c3aed);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-}
-
-.user-info { overflow: hidden; }
-.user-name { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-role { font-size: 0.7rem; color: rgba(255,255,255,.4); }
-
-/* MOBILE OVERLAY */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 199;
-  backdrop-filter: blur(2px);
-}
-
-/* MAIN CONTENT */
-.content {
-  flex: 1;
-  margin-left: var(--sidebar-w);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  transition: margin-left var(--t-slow);
-}
-
-/* TOP BAR */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: var(--header-h);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--shadow-xs);
-}
-
-.topbar-burger {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-  color: var(--text-secondary);
-  padding: 6px;
-  border-radius: var(--radius-sm);
-}
-
-.topbar-burger:hover { background: var(--surface); }
-
-.topbar-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  flex: 1;
-}
-
-.topbar-actions { display: flex; align-items: center; gap: 8px; }
-
-.topbar-btn {
-  background: none;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 7px 10px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  transition: var(--t-fast);
-  position: relative;
-  display: flex; align-items: center; gap: 5px;
-}
-
-.topbar-btn:hover { background: var(--surface); color: var(--text-primary); border-color: var(--border-focus); }
-
-.topbar-notif-dot {
-  position: absolute;
-  top: 4px; right: 4px;
-  width: 8px; height: 8px;
-  background: #ef4444;
-  border-radius: 50%;
-  border: 2px solid var(--card);
-}
-
-/* PAGE */
-.page { display: none; padding: 24px; animation: fadeSlideIn 0.2s ease; }
-.page.active { display: block; }
-
-/* ════════════════════════════════════════
-   CARDS
-   ════════════════════════════════════════ */
-.card {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  padding: 20px;
-  margin-bottom: 16px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.card-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-/* ════════════════════════════════════════
-   GRID SYSTEM
-   ════════════════════════════════════════ */
-.grid { display: grid; gap: 16px; }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
-
-/* ════════════════════════════════════════
-   STAT CARDS
-   ════════════════════════════════════════ */
-.stat-card {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  padding: 18px 20px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  transition: var(--t-mid);
-  box-shadow: var(--shadow-xs);
-}
-
-.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-
-.stat-icon {
-  width: 44px; height: 44px;
-  border-radius: var(--radius-md);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.stat-body { flex: 1; min-width: 0; }
-.stat-label { font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-.stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1.1; }
-.stat-sub   { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
-
-.stat-trend {
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 7px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.trend-up   { background: var(--success-light); color: var(--success); }
-.trend-down { background: var(--danger-light); color: var(--danger); }
-
-/* ════════════════════════════════════════
-   FORMS
-   ════════════════════════════════════════ */
-.form-group { margin-bottom: 14px; }
-
-.form-group label {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 13px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-  background: var(--card);
-  transition: var(--t-fast);
-  -webkit-appearance: none;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-}
-
-.form-control.error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(220,38,38,.1); }
-.form-control::placeholder { color: var(--text-muted); }
-
-.field-error { font-size: 0.75rem; color: var(--danger); margin-top: 4px; display: none; }
-.form-control.error + .field-error { display: block; }
-
-/* ════════════════════════════════════════
-   BUTTONS
-   ════════════════════════════════════════ */
-.btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--t-fast);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  text-decoration: none;
-}
-
-.btn:disabled { opacity: .55; cursor: not-allowed; transform: none !important; }
-.btn:active:not(:disabled) { transform: scale(.97); }
-
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  box-shadow: 0 2px 8px rgba(37,99,235,.3);
-}
-.btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 4px 14px rgba(37,99,235,.4); transform: translateY(-1px); }
-
-.btn-success { background: var(--success-light); color: var(--success); border: 1.5px solid #bbf7d0; }
-.btn-success:hover:not(:disabled) { background: #dcfce7; }
-
-.btn-danger  { background: var(--danger-light); color: var(--danger); border: 1.5px solid #fecaca; }
-.btn-danger:hover:not(:disabled) { background: #fee2e2; }
-
-.btn-secondary { background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); }
-.btn-secondary:hover:not(:disabled) { background: var(--card); color: var(--text-primary); border-color: var(--border-focus); }
-
-.btn-ghost { background: none; color: var(--text-secondary); border: 1.5px solid transparent; }
-.btn-ghost:hover:not(:disabled) { background: var(--surface); color: var(--text-primary); }
-
-.btn-sm  { padding: 6px 12px; font-size: 0.78rem; border-radius: var(--radius-sm); }
-.btn-lg  { padding: 13px 24px; font-size: 0.95rem; }
-.btn-block { width: 100%; justify-content: center; }
-
-/* ════════════════════════════════════════
-   BADGES / TAGS
-   ════════════════════════════════════════ */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.badge-blue    { background: var(--primary-light); color: var(--primary); }
-.badge-green   { background: var(--success-light); color: var(--success); }
-.badge-red     { background: var(--danger-light);  color: var(--danger); }
-.badge-orange  { background: var(--warning-light); color: var(--warning); }
-.badge-gray    { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); }
-
-/* ════════════════════════════════════════
-   TABLE
-   ════════════════════════════════════════ */
-.table-wrap { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border); }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.84rem;
-}
-
-thead th {
-  background: var(--surface);
-  padding: 11px 14px;
-  text-align: left;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: .5px;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-tbody td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-primary);
-  vertical-align: middle;
-}
-
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--surface); }
-
-/* ════════════════════════════════════════
-   MODAL
-   ════════════════════════════════════════ */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 500;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  backdrop-filter: blur(3px);
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--card);
-  border-radius: var(--radius-xl);
-  width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  animation: scaleIn 0.2s ease;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  background: var(--card);
-  z-index: 1;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-}
-
-.modal-title { font-size: 1rem; font-weight: 700; }
-
-.modal-close {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  width: 30px; height: 30px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  font-size: 1rem;
-  color: var(--text-secondary);
-  transition: var(--t-fast);
-}
-
-.modal-close:hover { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
-
-.modal-body   { padding: 20px 24px; }
-.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-
-/* ════════════════════════════════════════
-   TOAST NOTIFICATIONS
-   ════════════════════════════════════════ */
-#toast-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  pointer-events: none;
-}
-
-.toast {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 13px 16px;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  min-width: 280px;
-  max-width: 380px;
-  box-shadow: var(--shadow-lg);
-  animation: toastIn 0.3s ease forwards;
-  pointer-events: all;
-  border-left: 4px solid var(--primary);
-}
-
-.toast.success { border-left-color: var(--success); }
-.toast.error   { border-left-color: var(--danger); }
-.toast.warning { border-left-color: var(--warning); }
-
-.toast-icon  { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
-.toast-body  { flex: 1; }
-.toast-title { font-size: 0.84rem; font-weight: 700; margin-bottom: 2px; }
-.toast-msg   { font-size: 0.78rem; color: var(--text-secondary); }
-
-.toast.removing { animation: toastOut 0.25s ease forwards; }
-
-/* ════════════════════════════════════════
-   PROGRESS BAR
-   ════════════════════════════════════════ */
-.progress-bar {
-  height: 8px;
-  background: var(--surface);
-  border-radius: 99px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 99px;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-  transition: width 0.6s ease;
-}
-
-/* ════════════════════════════════════════
-   EMPTY STATE
-   ════════════════════════════════════════ */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-  color: var(--text-muted);
-  gap: 12px;
-}
-
-.empty-icon  { font-size: 2.5rem; opacity: .5; }
-.empty-title { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); }
-.empty-desc  { font-size: 0.82rem; }
-
-/* ════════════════════════════════════════
-   SEARCH BAR
-   ════════════════════════════════════════ */
-.search-bar {
-  position: relative;
-  flex: 1;
-  max-width: 320px;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 8px 12px 8px 36px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: 0.84rem;
-  background: var(--surface);
-  color: var(--text-primary);
-  transition: var(--t-fast);
-}
-
-.search-bar input:focus { outline: none; border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-
-.search-icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  pointer-events: none;
-}
-
-/* ════════════════════════════════════════
-   AVATAR GROUP
-   ════════════════════════════════════════ */
-.avatar {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #7c3aed);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-  border: 2px solid var(--card);
-}
-
-/* ════════════════════════════════════════
-   PHOTO UPLOAD
-   ════════════════════════════════════════ */
-.upload-zone {
-  border: 2px dashed var(--border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--t-fast);
-  background: var(--surface);
-}
-
-.upload-zone:hover, .upload-zone.dragover {
-  border-color: var(--primary);
-  background: var(--primary-light);
-}
-
-.upload-zone input { display: none; }
-
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.photo-thumb {
-  aspect-ratio: 1;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  position: relative;
-  border: 1px solid var(--border);
-  cursor: pointer;
-}
-
-.photo-thumb img  { width: 100%; height: 100%; object-fit: cover; }
-
-.photo-thumb .del {
-  position: absolute;
-  top: 4px; right: 4px;
-  background: rgba(0,0,0,.6);
-  border: none;
-  border-radius: 50%;
-  width: 24px; height: 24px;
-  color: white;
-  font-size: 0.7rem;
-  cursor: pointer;
-  display: none;
-  align-items: center; justify-content: center;
-}
-
-.photo-thumb:hover .del { display: flex; }
-
-/* ════════════════════════════════════════
-   NOTIFICATION PANEL
-   ════════════════════════════════════════ */
-.notif-panel {
-  position: fixed;
-  top: var(--header-h);
-  right: 0;
-  width: 360px;
-  max-height: calc(100vh - var(--header-h));
-  background: var(--card);
-  border-left: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
-  z-index: 300;
-  display: none;
-  flex-direction: column;
-  animation: slideInRight 0.2s ease;
-}
-
-.notif-panel.open { display: flex; }
-
-.notif-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-
-.notif-list {
-  overflow-y: auto;
-  flex: 1;
-}
-
-.notif-item {
-  display: flex;
-  gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: var(--t-fast);
-}
-
-.notif-item:hover { background: var(--surface); }
-.notif-item.unread { background: var(--primary-light); }
-.notif-item.unread:hover { background: #dbeafe; }
-
-.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 6px; }
-.notif-dot.read { background: transparent; border: 1.5px solid var(--border); }
-
-.notif-content  { flex: 1; }
-.notif-text     { font-size: 0.82rem; color: var(--text-primary); line-height: 1.4; }
-.notif-time     { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
-
-/* ════════════════════════════════════════
-   KANBAN / TASKS
-   ════════════════════════════════════════ */
-.kanban {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  align-items: start;
-}
-
-.kanban-col {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.kanban-col-header {
-  padding: 12px 16px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-}
-
-.kanban-cards { padding: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 80px; }
-
-.task-card {
-  background: var(--card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  padding: 12px 14px;
-  cursor: pointer;
-  transition: var(--t-fast);
-  box-shadow: var(--shadow-xs);
-}
-
-.task-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-
-.task-title { font-size: 0.84rem; font-weight: 600; margin-bottom: 8px; }
-.task-meta  { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-
-/* ════════════════════════════════════════
-   GANTT (İş Programı)
-   ════════════════════════════════════════ */
-.gantt-wrap { overflow-x: auto; }
-
-.gantt-table {
-  border-collapse: collapse;
-  min-width: 100%;
-  font-size: 0.78rem;
-}
-
-.gantt-table th, .gantt-table td {
-  border: 1px solid var(--border);
-  padding: 0;
-}
-
-.gantt-row-label { padding: 8px 12px; background: var(--surface); font-weight: 600; white-space: nowrap; min-width: 160px; }
-
-.gantt-cell {
-  width: 32px;
-  height: 34px;
-  cursor: pointer;
-  transition: var(--t-fast);
-}
-
-.gantt-cell:hover  { opacity: .75; }
-.gantt-cell.work   { background: #3b82f6; }
-.gantt-cell.critical { background: #ef4444; }
-.gantt-cell.payment  { background: #16a34a; }
-
-/* ════════════════════════════════════════
-   ATTENDANCE (Yoklama)
-   ════════════════════════════════════════ */
-.attendance-grid { display: flex; flex-direction: column; gap: 8px; }
-
-.attendance-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  transition: var(--t-fast);
-}
-
-.attendance-row:hover { border-color: var(--border-focus); }
-
-.attendance-name { flex: 1; font-size: 0.84rem; font-weight: 500; }
-
-.att-btn {
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border);
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--t-fast);
-  background: var(--surface);
-  color: var(--text-secondary);
-}
-
-.att-btn.active-geldi  { background: var(--success-light); border-color: #bbf7d0; color: var(--success); }
-.att-btn.active-gelmedi{ background: var(--danger-light);  border-color: #fecaca; color: var(--danger); }
-.att-btn.active-izinli { background: var(--warning-light); border-color: #fed7aa; color: var(--warning); }
-
-/* ════════════════════════════════════════
-   STOCK LEVEL
-   ════════════════════════════════════════ */
-.stock-level {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.stock-bar {
-  flex: 1;
-  height: 6px;
-  background: var(--surface);
-  border-radius: 99px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-
-.stock-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
-.stock-fill.high    { background: var(--success); }
-.stock-fill.medium  { background: var(--warning); }
-.stock-fill.low     { background: var(--danger); }
-
-.stock-pct { font-size: 0.72rem; font-weight: 700; min-width: 34px; text-align: right; }
-
-/* ════════════════════════════════════════
-   DAILY REPORT
-   ════════════════════════════════════════ */
-.report-score {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.score-star {
-  font-size: 1.1rem;
-  cursor: pointer;
-  opacity: .35;
-  transition: var(--t-fast);
-}
-
-.score-star.active { opacity: 1; }
-.score-star:hover  { transform: scale(1.2); }
-
-/* ════════════════════════════════════════
-   RESPONSIVE BREAKPOINTS
-   ════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .kanban { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 768px) {
-  :root { --sidebar-w: 0px; }
-
+  :root {
+    --ana: #2563eb;
+    --ana-acik: #eff6ff;
+    --ana-orta: #bfdbfe;
+    --yesil: #16a34a;
+    --yesil-acik: #f0fdf4;
+    --kirmizi: #dc2626;
+    --kirmizi-acik: #fef2f2;
+    --turuncu: #ea580c;
+    --turuncu-acik: #fff7ed;
+    --mor: #7c3aed;
+    --mor-acik: #f5f3ff;
+    --metin: #0f172a;
+    --metin-acik: #64748b;
+    --sinir: #e2e8f0;
+    --bg: #f1f5f9;
+    --kart: #ffffff;
+    --header: #1e3a5f;
+    --sidebar-w: 220px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--metin); }
+  @keyframes sync-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  @keyframes modalAc { from{transform:scale(0.95) translateY(10px);opacity:0} to{transform:scale(1);opacity:1} }
+  @keyframes toastGel { from{transform:translateX(60px);opacity:0} to{transform:none;opacity:1} }
+  @keyframes pinSallan { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+  /* ── GİRİŞ EKRANI ── */
+  .giris-ekrani {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .giris-kutu {
+    background: white; border-radius: 24px; padding: 36px 32px;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    animation: modalAc 0.3s ease;
+  }
+  .giris-logo { text-align: center; margin-bottom: 24px; }
+  .giris-logo-ikon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; margin: 0 auto 12px;
+    box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+  }
+  .giris-logo-adi { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--metin); }
+  .giris-logo-adi span { color: var(--ana); }
+  .giris-logo-alt { font-size: 0.8rem; color: var(--metin-acik); margin-top: 3px; }
+  .giris-baslik { font-size: 1rem; font-weight: 700; color: var(--metin); text-align: center; margin-bottom: 6px; }
+  .giris-alt { font-size: 0.82rem; color: var(--metin-acik); text-align: center; margin-bottom: 20px; }
+
+  /* PIN NOKTALARI */
+  .pin-noktalar {
+    display: flex; justify-content: center; gap: 14px;
+    margin: 18px 0 8px;
+  }
+  .pin-nokta {
+    width: 15px; height: 15px; border-radius: 50%;
+    border: 2px solid var(--sinir); background: transparent;
+    transition: all 0.18s ease;
+  }
+  .pin-nokta.dolu {
+    background: var(--ana); border-color: var(--ana);
+    transform: scale(1.15);
+  }
+  .pin-nokta.hata {
+    background: var(--kirmizi); border-color: var(--kirmizi);
+  }
+
+  /* PIN HATA */
+  .pin-hata-mesaj {
+    text-align: center; min-height: 20px;
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--kirmizi); margin-bottom: 14px;
+    transition: all 0.2s;
+  }
+
+  /* NUMPAD */
+  .pin-numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .pin-tus {
+    background: #f8fafc; border: 1.5px solid var(--sinir);
+    border-radius: 14px; padding: 17px 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.25rem; font-weight: 700;
+    cursor: pointer; color: var(--metin);
+    transition: all 0.12s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pin-tus:hover { background: var(--ana-acik); border-color: var(--ana); color: var(--ana); }
+  .pin-tus:active { transform: scale(0.94); }
+  .pin-tus.silme { font-size: 1rem; color: var(--metin-acik); }
+  .pin-not { text-align: center; font-size: 0.78rem; color: var(--metin-acik); }
+  .pin-not strong { color: var(--ana); }
+
+  /* KULLANICI ADI */
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block; font-size: 0.72rem; font-weight: 700;
+    color: var(--metin-acik); margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--sinir); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.87rem;
+    color: var(--metin); transition: all 0.15s; background: white;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--ana);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+
+  /* ── SIDEBAR ── */
+  .app-shell { display: flex; min-height: 100vh; }
   .sidebar {
-    transform: translateX(-240px);
-    width: 240px;
+    width: var(--sidebar-w); flex-shrink: 0;
+    background: linear-gradient(180deg, #0f2342 0%, #1a3a6b 100%);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 100; overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 18px 16px 15px;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem;
+    color: white; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+  }
+  .sidebar-logo span { color: #60a5fa; }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 1rem; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+  }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 10px 8px; flex: 1; }
+  .nav-tab {
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,0.55);
+    font-family: 'DM Sans', sans-serif; font-size: 0.83rem; font-weight: 500;
+    padding: 9px 12px; border-radius: 8px;
+    transition: all 0.15s; display: flex; align-items: center; gap: 9px;
+    text-align: left; width: 100%;
+  }
+  .nav-tab:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
+  .nav-tab.active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white; font-weight: 700;
+    box-shadow: 0 2px 10px rgba(59,130,246,0.35);
+  }
+  .sidebar-footer {
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .sidebar-user {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sidebar-user:hover { background: rgba(255,255,255,0.07); }
+  .sidebar-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; color: white;
+    flex-shrink: 0; background: #92400e;
+  }
+  .sidebar-isim { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.9); }
+  .sidebar-rol  { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+
+  .content { flex: 1; margin-left: var(--sidebar-w); min-height: 100vh; }
+  .main { padding: 22px 26px; animation: fadeIn 0.2s ease; }
+  .sayfa { display: none; }
+  .sayfa.aktif { display: block; }
+
+  @media(max-width:700px) {
+    :root { --sidebar-w: 54px; }
+    .sidebar-logo div:not(.logo-icon), .nav-tab span.etiket,
+    .sidebar-isim, .sidebar-rol { display: none; }
+    .nav-tab { justify-content: center; padding: 10px; }
+    .logo-icon { margin: 0 auto; }
+    .giris-kutu { padding: 28px 20px; }
   }
 
-  .sidebar.open {
-    transform: translateX(0);
-    width: 240px;
+  /* ── KARTLAR ── */
+  .kart {
+    background: var(--kart); border-radius: 14px; padding: 20px;
+    border: 1px solid var(--sinir);
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.04);
+    margin-bottom: 16px;
   }
+  .kart-baslik {
+    font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+    color: var(--metin); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media(max-width:768px) { .grid-2,.grid-3 { grid-template-columns: 1fr; } }
 
-  .sidebar-overlay.open { display: block; }
+  /* ── BUTONLAR ── */
+  .btn {
+    padding: 8px 16px; border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.83rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-sari { background: linear-gradient(135deg,#3b82f6,#2563eb); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+  .btn-sari:hover { background: linear-gradient(135deg,#2563eb,#1d4ed8); transform: translateY(-1px); }
+  .btn-kirmizi { background: var(--kirmizi-acik); color: var(--kirmizi); border: 1.5px solid #fecaca; }
+  .btn-kirmizi:hover { background: #fee2e2; }
+  .btn-yesil { background: var(--yesil-acik); color: var(--yesil); border: 1.5px solid #bbf7d0; }
+  .btn-yesil:hover { background: #dcfce7; }
+  .btn-mavi { background: var(--ana-acik); color: var(--ana); border: 1.5px solid var(--ana-orta); }
+  .btn-mavi:hover { background: #dbeafe; }
+  .btn-sm { padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; }
 
-  .content { margin-left: 0; }
+  /* ── PANEL ── */
+  .panel-header { margin-bottom: 22px; }
+  .panel-selam { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--metin); line-height: 1.2; }
+  .panel-tarih { font-size: 0.83rem; color: var(--metin-acik); margin-top: 4px; }
+  .panel-stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+  @media(max-width:900px) { .panel-stat-grid { grid-template-columns: 1fr 1fr; } }
+  .panel-stat-kart {
+    background: white; border-radius: 14px; padding: 16px 18px;
+    border: 1px solid var(--sinir);
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06);
+    display: flex; align-items: center; gap: 12px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .panel-stat-kart:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,42,0.1); }
+  .panel-stat-ikon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .panel-stat-sayi { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; line-height: 1; }
+  .panel-stat-etiket { font-size: 0.72rem; color: var(--metin-acik); margin-top: 3px; font-weight: 500; }
+  .panel-santiye-satir {
+    display: flex; align-items: center; gap: 12px; padding: 11px 0;
+    border-bottom: 1px solid var(--sinir); cursor: pointer;
+    transition: all 0.12s; border-radius: 8px;
+  }
+  .panel-santiye-satir:last-child { border-bottom: none; }
+  .panel-santiye-satir:hover { background: var(--bg); padding-left: 6px; }
+  .panel-santiye-renk { width: 4px; height: 38px; border-radius: 3px; flex-shrink: 0; }
+  .panel-santiye-adi { font-weight: 600; font-size: 0.88rem; color: var(--metin); }
+  .panel-santiye-alt { font-size: 0.75rem; color: var(--metin-acik); margin-top: 2px; }
+  .panel-gorev-satir { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--sinir); }
+  .panel-gorev-satir:last-child { border-bottom: none; }
+  .panel-gorev-oncelik { width: 3px; height: 30px; border-radius: 2px; flex-shrink: 0; }
 
-  .topbar-burger { display: flex; }
+  /* ── TAKVİM ── */
+  .panel-ay-btn { background: #f1f5f9; border: 1px solid var(--sinir); border-radius: 6px; cursor: pointer; padding: 3px 8px; font-size: 0.75rem; color: var(--metin-acik); transition: all 0.1s; }
+  .panel-ay-btn:hover { background: var(--ana-acik); color: var(--ana); }
+  .panel-ay-adi { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--metin); min-width: 90px; text-align: center; }
+  .panel-takvim-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .panel-gun-baslik { font-size: 0.68rem; font-weight: 700; color: var(--metin-acik); text-align: center; padding: 4px 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .panel-gun-baslik.hs { color: #f87171; }
+  .panel-hucre {
+    border-radius: 7px; padding: 4px 2px; min-height: 48px;
+    font-size: 0.72rem; text-align: center; cursor: default;
+    border: 1px solid transparent; transition: all 0.12s; position: relative;
+  }
+  .panel-hucre:hover { border-color: var(--sinir); }
+  .panel-hucre.bos { background: transparent; }
+  .panel-hucre.normal { background: #f8fafc; }
+  .panel-hucre.bugun-cell { background: var(--ana); color: white; font-weight: 800; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+  .panel-hucre.hafta-sonu { background: #fef2f2; color: #dc2626; }
+  .panel-hucre.has-data { border-color: #86efac; }
+  .gun-no { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.78rem; }
+  .mini-dot { width: 5px; height: 5px; border-radius: 50%; margin: 2px auto 0; }
 
-  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  /* ── TOOLTIP ── */
+  .panel-tooltip {
+    position: fixed; z-index: 300;
+    background: #0f172a; color: white;
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 0.78rem; min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    pointer-events: none; opacity: 0; transition: opacity 0.12s;
+  }
+  .panel-tooltip.goster { opacity: 1; }
+  .tt-baslik { font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+  .tt-satir { display: flex; justify-content: space-between; gap: 12px; margin-top: 3px; }
+  .tt-kisi { font-weight: 700; color: #60a5fa; }
 
-  .kanban { grid-template-columns: 1fr; }
+  /* ── HAVa WIDGET ── */
+  .hava-widget { background: linear-gradient(135deg, #0ea5e9, #2563eb); border-radius: 14px; padding: 14px 16px; color: white; position: relative; overflow: hidden; }
+  .hava-widget::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+  .hava-sicaklik { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+  .hava-durum { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; }
+  .hava-detay { display: flex; gap: 12px; margin-top: 10px; font-size: 0.72rem; opacity: 0.8; }
+  .hava-sehir { font-size: 0.75rem; opacity: 0.75; margin-bottom: 6px; }
 
-  .page { padding: 16px; }
+  /* ── ŞANTİYE KARTLARI ── */
+  .santiye-kart { background: white; border-radius: 16px; border: 1.5px solid var(--sinir); cursor: pointer; transition: all 0.18s; overflow: hidden; box-shadow: 0 1px 4px rgba(15,23,42,0.06); }
+  .santiye-kart:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.12); transform: translateY(-3px); }
+  .santiye-kart.secili { border-color: var(--ana); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+  .santiye-kart-ust { height: 76px; display: flex; align-items: flex-end; padding: 10px 14px; position: relative; overflow: hidden; }
+  .santiye-kart-ust-arka { position: absolute; inset: 0; opacity: 0.12; }
+  .santiye-kart-etiket { position: relative; z-index: 1; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.78rem; color: white; background: rgba(0,0,0,0.3); padding: 2px 10px; border-radius: 20px; backdrop-filter: blur(6px); }
+  .santiye-kart-sil { position: absolute; top: 8px; right: 8px; z-index: 2; display: flex; gap: 4px; }
+  .santiye-kart-alti { padding: 14px 16px; }
+  .santiye-kart-adi { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--metin); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .santiye-kart-konum { font-size: 0.75rem; color: var(--metin-acik); display: flex; align-items: center; gap: 3px; }
+  .santiye-kart-tarih { font-size: 0.72rem; color: var(--metin-acik); margin-top: 4px; }
+  .santiye-stat { display: grid; grid-template-columns: repeat(3,1fr); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--sinir); gap: 4px; }
+  .stat-item { text-align: center; }
+  .stat-sayi { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--metin); }
+  .stat-etiket { font-size: 0.63rem; color: var(--metin-acik); text-transform: uppercase; letter-spacing: 0.3px; }
 
-  .notif-panel { width: 100%; }
+  /* ── BADGES ── */
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+  .badge-yesil { background: #dcfce7; color: #15803d; }
+  .badge-kirmizi { background: #fee2e2; color: #dc2626; }
+  .badge-sari { background: #fef9c3; color: #92400e; }
+  .badge-mavi { background: #dbeafe; color: #1d4ed8; }
+  .badge-mor { background: #ede9fe; color: #7c3aed; }
+  .badge-gri { background: #f1f5f9; color: #64748b; }
 
-  .modal { max-width: 100%; margin: auto 10px; }
+  /* ── TABLO ── */
+  .yoklama-tablo { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  .yoklama-tablo th { background: #f8fafc; color: var(--metin-acik); padding: 9px 12px; text-align: left; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--sinir); }
+  .yoklama-tablo td { padding: 10px 12px; border-bottom: 1px solid var(--sinir); }
+  .yoklama-tablo tr:last-child td { border-bottom: none; }
+  .yoklama-tablo tr:hover td { background: #f8fafc; }
+  .durum-btn { padding: 4px 9px; border: 1.5px solid var(--sinir); border-radius: 6px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.1s; background: white; color: var(--metin-acik); font-family: 'DM Sans', sans-serif; }
+  .durum-btn.secili-geldi { background: #dcfce7; color: #15803d; border-color: #86efac; }
+  .durum-btn.secili-yarim { background: #fef9c3; color: #92400e; border-color: #fde047; }
+  .durum-btn.secili-gelmedi { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+  .durum-btn.secili-izinli { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+  .durum-btn.secili-raporlu { background: #ede9fe; color: #7c3aed; border-color: #c4b5fd; }
 
-  #toast-container { bottom: 16px; right: 16px; left: 16px; }
-  .toast { min-width: unset; max-width: unset; width: 100%; }
-}
+  /* ── GÖREVLER ── */
+  .gorev-item { background: white; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--sinir); border-left: 3px solid var(--sinir); transition: box-shadow 0.15s; }
+  .gorev-item:hover { box-shadow: 0 2px 10px rgba(15,23,42,0.08); }
+  .gorev-item.oncelik-yuksek { border-left-color: var(--kirmizi); }
+  .gorev-item.oncelik-orta { border-left-color: #f59e0b; }
+  .gorev-item.oncelik-dusuk { border-left-color: var(--yesil); }
+  .gorev-item.tamamlandi { opacity: 0.5; }
+  .gorev-check { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--sinir); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; transition: all 0.15s; flex-shrink: 0; background: white; }
+  .gorev-check.tamam { background: var(--yesil); border-color: var(--yesil); color: white; }
+  .gorev-icerik { flex: 1; }
+  .gorev-baslik { font-weight: 600; font-size: 0.86rem; }
+  .gorev-meta { font-size: 0.73rem; color: var(--metin-acik); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-@media (max-width: 480px) {
-  .topbar { padding: 0 14px; }
-  .stat-value { font-size: 1.3rem; }
-  .login-card { padding: 28px 20px; }
-}
+  /* ── ÖZET KARTLAR ── */
+  .ozet-kart { background: white; border-radius: 12px; padding: 16px; border: 1px solid var(--sinir); text-align: center; transition: transform 0.15s; }
+  .ozet-kart:hover { transform: translateY(-2px); }
+  .ozet-sayi { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; line-height: 1; }
+  .ozet-etiket { font-size: 0.75rem; color: var(--metin-acik); margin-top: 5px; font-weight: 500; }
+  .ozet-ikon { font-size: 1.3rem; margin-bottom: 6px; }
 
-/* ════════════════════════════════════════
-   UTILITY CLASSES
-   ════════════════════════════════════════ */
-.flex           { display: flex; }
-.flex-col       { flex-direction: column; }
-.items-center   { align-items: center; }
-.justify-between{ justify-content: space-between; }
-.gap-2          { gap: 8px; }
-.gap-3          { gap: 12px; }
-.gap-4          { gap: 16px; }
-.mt-1 { margin-top: 4px; }  .mt-2 { margin-top: 8px; }
-.mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; }
-.mb-2 { margin-bottom: 8px; }.mb-3 { margin-bottom: 12px; }
-.text-sm    { font-size: 0.8rem; }
-.text-xs    { font-size: 0.72rem; }
-.text-muted { color: var(--text-muted); }
-.font-bold  { font-weight: 700; }
-.w-full     { width: 100%; }
-.truncate   { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hidden     { display: none !important; }
-.sr-only    { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.4); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.acik { display: flex; }
+  .modal { background: white; border-radius: 18px; padding: 24px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(15,23,42,0.2); animation: modalAc 0.2s ease; }
+  .modal-baslik { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--metin); margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+  .modal-kapat { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--metin-acik); width: 28px; height: 28px; border-radius: 50%; display:flex;align-items:center;justify-content:center; transition: background 0.1s; }
+  .modal-kapat:hover { background: var(--bg); }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  /* ── TOAST ── */
+  .toast-kap { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 7px; z-index: 999; }
+  .toast { background: #0f172a; color: white; padding: 10px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 500; box-shadow: 0 4px 16px rgba(15,23,42,0.25); animation: toastGel 0.2s ease; display: flex; align-items: center; gap: 8px; border-left: 3px solid var(--ana); }
+
+  /* ── PANEL BÖLÜM BAŞLIK ── */
+  .panel-bolum-baslik { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--metin); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+  /* ── BOŞ DURUM ── */
+  .bos-durum { text-align: center; padding: 40px 20px; }
+  .bos-durum-ikon { font-size: 2.2rem; margin-bottom: 10px; }
+  .bos-durum-metin { color: var(--metin-acik); font-size: 0.88rem; line-height: 1.6; }
+
+  /* ── PIN INPUT (eski 4-hane input, sadece fallback) ── */
+  .pin-input-kap { display: flex; gap: 10px; justify-content: center; margin: 12px 0; }
+  .pin-hane {
+    width: 54px; height: 58px; border: 2px solid var(--sinir); border-radius: 12px;
+    font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800;
+    text-align: center; color: var(--metin); background: var(--bg);
+    transition: border-color 0.15s; -webkit-text-security: disc;
+  }
+  .pin-hane:focus { outline: none; border-color: var(--ana); background: var(--ana-acik); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+  .giris-hata { background: #fee2e2; color: #dc2626; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 12px; display: none; }
+
+  /* ── KULLANICI ── */
+  .kullanici-satir { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--sinir); }
+  .kullanici-satir:last-child { border-bottom: none; }
+  .kullanici-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: white; flex-shrink: 0; }
+  .rol-admin { background: #fef9c3; color: #92400e; }
+  .rol-sef { background: #dbeafe; color: #1d4ed8; }
+
+  /* ── SİPARİŞ ── */
+  .siparis-kart { background: white; border-radius: 12px; border: 1px solid var(--sinir); border-left: 4px solid var(--sinir); margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.15s; }
+  .siparis-kart:hover { box-shadow: 0 4px 16px rgba(15,23,42,0.08); }
+  .siparis-kart.durum-siparis { border-left-color: #f59e0b; }
+  .siparis-kart.durum-teslim { border-left-color: var(--yesil); }
+  .siparis-kart.durum-iptal { border-left-color: var(--kirmizi); opacity: 0.6; }
+  .siparis-ust { display: flex; align-items: center; gap: 12px; padding: 12px 14px; flex-wrap: wrap; }
+  .siparis-ikon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .siparis-alt-bar { padding: 7px 14px 10px; display: flex; gap: 7px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--sinir); background: #f8fafc; }
+
+  /* ── İLERLEME ── */
+  .ilerleme-kart { background: white; border-radius: 14px; border: 1px solid var(--sinir); margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(15,23,42,0.05); }
+  .ilerleme-kart-header { padding: 16px 20px; border-bottom: 1px solid var(--sinir); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .ilerleme-kart-adi { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--metin); display: flex; align-items: center; gap: 8px; }
+  .ilerleme-asama-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--sinir); }
+  .ilerleme-asama { background: white; padding: 14px 16px; }
+  .ilerleme-asama-adi { font-size: 0.78rem; font-weight: 700; color: var(--metin-acik); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 8px; }
+  .ilerleme-asama-yuzde { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 6px; }
+  .ilerleme-bar-kap { height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .ilerleme-bar-dolu { height: 100%; border-radius: 3px; transition: width 0.5s; }
+  .ilerleme-slider { width: 100%; cursor: pointer; accent-color: var(--ana); margin-top: 4px; }
+
+  /* ── SEÇİLİ ŞANTİYE ── */
+  .secili-santiye-banner { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .ssb-adi { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--ana); }
+  .ssb-alt { font-size: 0.77rem; color: var(--metin-acik); }
+
+  /* ── İŞ PROGRAMI ── */
+  .isp-tablo-kap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--sinir); box-shadow: 0 1px 4px rgba(15,23,42,0.05); }
+  .isp-tablo { border-collapse: collapse; width: 100%; font-size: 0.78rem; min-width: 1200px; }
+  .isp-tablo th { background: #0f2342; color: rgba(255,255,255,0.9); padding: 7px 5px; text-align: center; font-size: 0.68rem; font-weight: 700; white-space: nowrap; border: 1px solid rgba(255,255,255,0.12); }
+  .isp-tablo th.col-adi { text-align: left; min-width: 200px; padding-left: 12px; }
+  .isp-tablo th.col-dar { min-width: 70px; }
+  .isp-tablo tr.grup-satir td { background: #dbeafe; font-weight: 700; color: #1e3a8a; font-size: 0.82rem; padding: 7px 12px; border: 1px solid #bfdbfe; }
+  .isp-tablo tr.altgrup-satir td { background: #f0f9ff; font-weight: 600; color: var(--ana); font-size: 0.78rem; padding: 6px 12px; border: 1px solid #e0f2fe; }
+  .isp-tablo tr.kalem-satir td { background: white; padding: 5px; border: 1px solid var(--sinir); vertical-align: middle; }
+  .isp-tablo tr.kalem-satir:hover td { background: #f8fafc; }
+  .isp-tablo tr.toplam-satir td { background: #fef9c3; font-weight: 700; color: #92400e; border: 1px solid #fde68a; padding: 6px 5px; }
+  .isp-tablo tr.genel-toplam td { background: #0f2342; color: #fbbf24; font-weight: 800; border: 1px solid #1e3a8a; padding: 7px 5px; }
+  .hafta-kare { width: 20px; height: 22px; border: 1.5px solid #e2e8f0; border-radius: 4px; cursor: pointer; display: inline-block; transition: all 0.1s; background: white; margin: 1px; }
+  .hafta-kare:hover { border-color: var(--ana); transform: scale(1.15); box-shadow: 0 2px 6px rgba(37,99,235,0.2); }
+  .hafta-kare.secili { background: var(--ana); border-color: #1d4ed8; }
+  .isp-kalem-input { border: none; background: none; width: 100%; font-size: 0.78rem; font-family: 'DM Sans',sans-serif; color: var(--metin); padding: 2px 4px; }
+  .isp-kalem-input:focus { outline: 1px solid var(--ana); border-radius: 3px; background: var(--ana-acik); }
+
+  /* ── ANLAŞMA ── */
+  .anl-kart { background: white; border-radius: 12px; border: 1px solid var(--sinir); border-left: 4px solid var(--sinir); margin-bottom: 8px; padding: 14px 16px; transition: box-shadow 0.15s; }
+  .anl-kart:hover { box-shadow: 0 4px 16px rgba(15,23,42,0.08); }
+  .anl-kart.tur-iscilik { border-left-color: #3b82f6; }
+  .anl-kart.tur-malzeme { border-left-color: #16a34a; }
+  .anl-kart.tur-nakliye { border-left-color: #ea580c; }
+  .anl-kart.tur-ekipman { border-left-color: #7c3aed; }
+
+  /* MALİYET */
+  .maliyet-satir { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--sinir); }
+  .maliyet-satir:last-child { border-bottom: none; }
+  .maliyet-ikon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+
+  /* ── TAKVIM SAYFASI ── */
+  .takvim-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .takvim-gun-baslik { text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--metin-acik); padding: 8px 4px; text-transform: uppercase; }
+  .takvim-gun-baslik.hs { color: #f87171; }
+  .takvim-hucre { border-radius: 10px; min-height: 80px; padding: 6px; border: 1.5px solid var(--sinir); background: white; cursor: pointer; transition: all 0.12s; }
+  .takvim-hucre:hover { border-color: var(--ana); box-shadow: 0 2px 8px rgba(37,99,235,0.12); }
+  .takvim-hucre.bos { background: transparent; border-color: transparent; cursor: default; }
+  .takvim-hucre.bugun { border-color: var(--ana); background: var(--ana-acik); }
+  .takvim-hucre.hs { background: #fff1f2; }
+  .takvim-gun-no { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+  .takvim-hucre.bugun .takvim-gun-no { color: var(--ana); }
+  .takvim-hucre.hs .takvim-gun-no { color: #f87171; }
+  .takvim-etkinlik { font-size: 0.65rem; border-radius: 4px; padding: 1px 5px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  @media(max-width:480px) {
+    .main { padding: 14px 12px; }
+    .giris-kutu { padding: 22px 16px; }
+    .pin-tus { padding: 14px 0; font-size: 1.1rem; }
+    .panel-stat-grid { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ════════ LOGIN ════════ -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-logo-icon">🏗️</div>
-      <div class="login-logo-text">Şantiye<span>Pro</span></div>
-    </div>
-    <h1 class="login-title">Hoş Geldiniz</h1>
-    <p class="login-sub">Güvenli giriş için PIN kodunuzu girin</p>
+<!-- TOAST CONTAINER -->
+<div class="toast-kap" id="toast-kap"></div>
 
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
-    </div>
+<!-- TOOLTIP -->
+<div class="panel-tooltip" id="panel-tooltip">
+  <div class="tt-baslik" id="tt-baslik"></div>
+  <div id="tt-icerik"></div>
+</div>
 
-    <div id="pin-error" style="text-align:center;color:var(--danger);font-size:.8rem;min-height:18px;margin-bottom:8px"></div>
-
-    <div class="pin-pad">
-      <button class="pin-btn" onclick="pinTus('1')">1</button>
-      <button class="pin-btn" onclick="pinTus('2')">2</button>
-      <button class="pin-btn" onclick="pinTus('3')">3</button>
-      <button class="pin-btn" onclick="pinTus('4')">4</button>
-      <button class="pin-btn" onclick="pinTus('5')">5</button>
-      <button class="pin-btn" onclick="pinTus('6')">6</button>
-      <button class="pin-btn" onclick="pinTus('7')">7</button>
-      <button class="pin-btn" onclick="pinTus('8')">8</button>
-      <button class="pin-btn" onclick="pinTus('9')">9</button>
-      <button class="pin-btn del" onclick="pinSil()">⌫</button>
-      <button class="pin-btn" onclick="pinTus('0')">0</button>
-      <button class="pin-btn del" onclick="pinTemizle()">✕</button>
+<!-- ══════════════════════════════════════
+     GİRİŞ EKRANI — YENİ NUMPAD TASARIMI
+     ══════════════════════════════════════ -->
+<div class="giris-ekrani" id="giris-ekrani">
+  <div class="giris-kutu">
+    <div class="giris-logo">
+      <div class="giris-logo-ikon">🏗️</div>
+      <div class="giris-logo-adi">Şantiye<span style="color:#2563eb">Pro</span></div>
+      <div class="giris-logo-alt">Şantiye Yönetim Sistemi</div>
     </div>
 
-    <p style="text-align:center;font-size:.75rem;color:var(--text-muted)">Demo PIN: <strong>1234</strong></p>
+    <div class="giris-baslik">PIN ile Giriş</div>
+    <div class="giris-alt">4 haneli PIN kodunuzu girin</div>
+
+    <!-- PIN nokta göstergesi -->
+    <div class="pin-noktalar">
+      <div class="pin-nokta" id="pn0"></div>
+      <div class="pin-nokta" id="pn1"></div>
+      <div class="pin-nokta" id="pn2"></div>
+      <div class="pin-nokta" id="pn3"></div>
+    </div>
+
+    <!-- Hata mesajı -->
+    <div class="pin-hata-mesaj" id="pin-hata-mesaj"></div>
+
+    <!-- Numpad -->
+    <div class="pin-numpad">
+      <button class="pin-tus" type="button" onclick="pinTus('1')">1</button>
+      <button class="pin-tus" type="button" onclick="pinTus('2')">2</button>
+      <button class="pin-tus" type="button" onclick="pinTus('3')">3</button>
+      <button class="pin-tus" type="button" onclick="pinTus('4')">4</button>
+      <button class="pin-tus" type="button" onclick="pinTus('5')">5</button>
+      <button class="pin-tus" type="button" onclick="pinTus('6')">6</button>
+      <button class="pin-tus" type="button" onclick="pinTus('7')">7</button>
+      <button class="pin-tus" type="button" onclick="pinTus('8')">8</button>
+      <button class="pin-tus" type="button" onclick="pinTus('9')">9</button>
+      <button class="pin-tus silme" type="button" onclick="pinSil()">⌫ Sil</button>
+      <button class="pin-tus" type="button" onclick="pinTus('0')">0</button>
+      <button class="pin-tus silme" type="button" onclick="pinTemizle()">✕ Temizle</button>
+    </div>
+
+    <div class="pin-not">Varsayılan PIN: <strong>1234</strong> &nbsp;·&nbsp; Kullanıcı: <strong>admin</strong></div>
   </div>
 </div>
 
-<!-- ════════ APP ════════ -->
-<div id="app">
+<!-- ══════════════════════════════════════
+     ANA UYGULAMA
+     ══════════════════════════════════════ -->
+<div class="app-shell" id="app-shell" style="display:none">
 
-  <!-- Sidebar Overlay -->
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarKapat()"></div>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Ana navigasyon">
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="sidebar-logo-icon">🏗️</div>
-      <div class="sidebar-logo-text">Şantiye<span>Pro</span></div>
+      <div class="logo-icon">🏗️</div>
+      <div>Şantiye<span>Pro</span></div>
     </div>
 
-    <div class="sidebar-nav">
-      <div class="sidebar-section-label">Ana Menü</div>
-
-      <button class="nav-item active" data-page="panel" onclick="sayfaGit('panel')" aria-label="Ana Panel">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Ana Panel</span>
-      </button>
-
-      <button class="nav-item" data-page="santiyeler" onclick="sayfaGit('santiyeler')" aria-label="Şantiyeler">
-        <span class="nav-icon">🏗️</span>
-        <span class="nav-label">Şantiyeler</span>
-      </button>
-
-      <button class="nav-item" data-page="personel" onclick="sayfaGit('personel')" aria-label="Personel">
-        <span class="nav-icon">👷</span>
-        <span class="nav-label">Personel</span>
-      </button>
-
-      <button class="nav-item" data-page="yoklama" onclick="sayfaGit('yoklama')" aria-label="Yoklama">
-        <span class="nav-icon">✅</span>
-        <span class="nav-label">Yoklama</span>
-      </button>
-
-      <button class="nav-item" data-page="gorevler" onclick="sayfaGit('gorevler')" aria-label="Görevler">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">Görevler</span>
-        <span class="nav-badge" id="badge-gorev">0</span>
-      </button>
-
-      <div class="sidebar-section-label">Operasyon</div>
-
-      <button class="nav-item" data-page="gunluk-rapor" onclick="sayfaGit('gunluk-rapor')" aria-label="Günlük Rapor">
-        <span class="nav-icon">📝</span>
-        <span class="nav-label">Günlük Rapor</span>
-      </button>
-
-      <button class="nav-item" data-page="malzeme" onclick="sayfaGit('malzeme')" aria-label="Malzeme & Stok">
-        <span class="nav-icon">📦</span>
-        <span class="nav-label">Malzeme & Stok</span>
-      </button>
-
-      <button class="nav-item" data-page="fotograflar" onclick="sayfaGit('fotograflar')" aria-label="Fotoğraflar">
-        <span class="nav-icon">📸</span>
-        <span class="nav-label">Fotoğraflar</span>
-      </button>
-
-      <button class="nav-item" data-page="raporlar" onclick="sayfaGit('raporlar')" aria-label="Raporlar">
-        <span class="nav-icon">📈</span>
-        <span class="nav-label">Raporlar</span>
-      </button>
-
-      <div class="sidebar-section-label">Finans</div>
-
-      <button class="nav-item" data-page="maliyet" onclick="sayfaGit('maliyet')" aria-label="Maliyet">
-        <span class="nav-icon">💰</span>
-        <span class="nav-label">Maliyet</span>
-      </button>
-
-      <button class="nav-item" data-page="siparisler" onclick="sayfaGit('siparisler')" aria-label="Siparişler">
-        <span class="nav-icon">🛒</span>
-        <span class="nav-label">Siparişler</span>
-      </button>
-
-      <div class="sidebar-section-label">Sistem</div>
-
-      <button class="nav-item" data-page="ayarlar" onclick="sayfaGit('ayarlar')" aria-label="Ayarlar">
-        <span class="nav-icon">⚙️</span>
-        <span class="nav-label">Ayarlar</span>
-      </button>
+    <!-- Sync göstergesi -->
+    <div id="sync-durum" style="display:none;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,0.08);font-size:0.75rem;color:rgba(255,255,255,0.7)">
+      <div style="width:8px;height:8px;border-radius:50%;background:#60a5fa;animation:sync-pulse 1s infinite"></div>
+      Senkronize ediliyor...
     </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-tab active" onclick="sayfaGit('panel')"><span>📊</span><span class="etiket">Panel</span></button>
+      <button class="nav-tab" onclick="sayfaGit('santiyeler')"><span>🏗️</span><span class="etiket">Şantiyeler</span></button>
+      <button class="nav-tab" onclick="sayfaGit('maliyet')"><span>💰</span><span class="etiket">Maliyet</span></button>
+      <button class="nav-tab" onclick="sayfaGit('raporlar')"><span>📊</span><span class="etiket">Raporlar</span></button>
+      <button class="nav-tab" onclick="sayfaGit('takimlar')"><span>👥</span><span class="etiket">Takımlar</span></button>
+      <button class="nav-tab" onclick="sayfaGit('yoklama')"><span>✅</span><span class="etiket">Yoklama</span></button>
+      <button class="nav-tab" onclick="sayfaGit('gorevler')"><span>📋</span><span class="etiket">Görevler</span></button>
+      <button class="nav-tab" onclick="sayfaGit('takvim')"><span>📅</span><span class="etiket">Takvim</span></button>
+      <button class="nav-tab" onclick="sayfaGit('anlasma')"><span>📒</span><span class="etiket">Anlaşmalar</span></button>
+      <div style="height:1px;background:rgba(255,255,255,0.1);margin:6px 8px"></div>
+      <button class="nav-tab" onclick="sayfaGit('siparis')"><span>📦</span><span class="etiket">Sipariş</span></button>
+      <button class="nav-tab" onclick="sayfaGit('ilerleme')"><span>📐</span><span class="etiket">İlerleme</span></button>
+      <button class="nav-tab" onclick="sayfaGit('isprogrami')"><span>📅</span><span class="etiket">İş Programı</span></button>
+      <div style="height:1px;background:rgba(255,255,255,0.1);margin:6px 8px"></div>
+      <button class="nav-tab" onclick="sayfaGit('kullanicilar')"><span>👤</span><span class="etiket">Kullanıcılar</span></button>
+    </nav>
 
     <div class="sidebar-footer">
-      <div class="user-card" onclick="sayfaGit('ayarlar')">
-        <div class="user-avatar" id="user-avatar">A</div>
-        <div class="user-info">
-          <div class="user-name" id="user-name">Admin</div>
-          <div class="user-role">Yönetici</div>
+      <div class="sidebar-user">
+        <div class="kullanici-avatar sidebar-avatar" id="sidebar-avatar" style="background:#92400e">Y</div>
+        <div>
+          <div class="sidebar-isim" id="sidebar-isim">Yönetici</div>
+          <div class="sidebar-rol" id="sidebar-rol">admin</div>
         </div>
       </div>
+      <button class="btn btn-kirmizi btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="cikisYap()">
+        🚪 Çıkış Yap
+      </button>
     </div>
   </aside>
 
-  <!-- CONTENT -->
+  <!-- ── İÇERİK ── -->
   <div class="content">
-    <!-- TOPBAR -->
-    <header class="topbar" role="banner">
-      <button class="topbar-burger" id="burger-btn" onclick="sidebarToggle()" aria-label="Menüyü aç/kapat">
-        ☰
-      </button>
-      <div class="topbar-title" id="topbar-title">Ana Panel</div>
-      <div class="topbar-actions">
-        <button class="topbar-btn" onclick="darkModeToggle()" id="dark-btn" aria-label="Tema değiştir" title="Dark Mode">
-          🌙
-        </button>
-        <button class="topbar-btn" onclick="notifPanelToggle()" aria-label="Bildirimler" id="notif-btn">
-          🔔
-          <span class="topbar-notif-dot" id="notif-dot"></span>
-        </button>
-        <button class="topbar-btn btn-sm" onclick="cikisYap()" aria-label="Çıkış yap">
-          🚪 Çıkış
-        </button>
-      </div>
-    </header>
+    <div class="main" id="main-icerik">
 
-    <main role="main">
-      <!-- ════ PANEL ════ -->
-      <section class="page active" id="page-panel">
-        <div style="margin-bottom:22px">
-          <div style="font-size:1.5rem;font-weight:800" id="selam-text">Günaydın 👋</div>
-          <div style="font-size:.85rem;color:var(--text-secondary);margin-top:4px" id="panel-tarih"></div>
+      <!-- PANEL -->
+      <div class="sayfa aktif" id="sayfa-panel">
+        <div class="panel-header">
+          <div class="panel-selam" id="panel-selam-metin">Günaydın 👋</div>
+          <div class="panel-tarih" id="tarih-goster"></div>
         </div>
-
-        <!-- Stat Cards -->
-        <div class="grid grid-4" style="margin-bottom:16px" id="panel-stats"></div>
-
-        <div class="grid grid-2">
-          <!-- Aktif Şantiyeler -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">🏗️ Aktif Şantiyeler</div>
-              <button class="btn btn-sm btn-secondary" onclick="sayfaGit('santiyeler')">Tümü →</button>
-            </div>
-            <div id="panel-santiyeler-liste"></div>
+        <div class="panel-stat-grid" id="panel-istatistikler"></div>
+        <div class="grid-2">
+          <div class="kart">
+            <div class="kart-baslik">🏗️ Şantiyeler <span style="margin-left:auto;font-size:0.75rem;font-weight:500;color:var(--metin-acik)" id="panel-santiye-sayi"></span></div>
+            <div id="panel-santiyeler"></div>
           </div>
-
-          <!-- Bekleyen Görevler -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">📋 Bekleyen Görevler</div>
-              <button class="btn btn-sm btn-secondary" onclick="sayfaGit('gorevler')">Tümü →</button>
-            </div>
-            <div id="panel-gorev-liste"></div>
+          <div class="kart">
+            <div class="kart-baslik">📋 Bekleyen Görevler</div>
+            <div id="panel-gorevler"></div>
           </div>
         </div>
-
-        <div class="grid grid-2">
-          <!-- Hava Durumu -->
-          <div class="card">
-            <div class="card-title" style="margin-bottom:14px">🌤️ Hava Durumu</div>
-            <div id="hava-durumu-widget">
-              <div style="font-size:2rem;font-weight:800" id="hw-sicaklik">--°</div>
-              <div style="font-size:.85rem;color:var(--text-secondary)" id="hw-aciklama">Yükleniyor...</div>
-              <div style="font-size:.78rem;color:var(--text-muted);margin-top:6px">
-                💧 <span id="hw-nem">--</span>% &nbsp; 🌬️ <span id="hw-ruzgar">--</span> km/h
+        <div class="grid-2">
+          <div class="kart">
+            <div class="kart-baslik" style="margin-bottom:10px">📅 Çalışma Takvimi
+              <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+                <button class="panel-ay-btn" onclick="panelAyDegis(-1)">‹</button>
+                <span class="panel-ay-adi" id="panel-ay-baslik"></span>
+                <button class="panel-ay-btn" onclick="panelAyDegis(1)">›</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap" id="panel-santiye-filtreler"></div>
+            <div style="display:flex;gap:6px;margin-bottom:6px;font-size:0.7rem;color:var(--metin-acik)">
+              <span>Veri yok</span>
+              <span style="background:#dcfce7;padding:1px 7px;border-radius:4px;color:#15803d">Az (1-3)</span>
+              <span style="background:#166534;color:white;padding:1px 7px;border-radius:4px">Yoğun (9+)</span>
+              <span style="background:#fef9c3;padding:1px 7px;border-radius:4px;color:#92400e">Planlanmış</span>
+            </div>
+            <div class="panel-takvim-grid" id="panel-takvim-basliklar"></div>
+            <div class="panel-takvim-grid" id="panel-takvim-icerik"></div>
+          </div>
+          <div id="panel-ilerleme-grafik"></div>
+        </div>
+        <div class="kart">
+          <div class="kart-baslik">🌤️ Hava Durumu</div>
+          <div id="hava-widget-kap">
+            <div class="hava-widget">
+              <div class="hava-sehir" id="hava-sehir">📍 Yükleniyor...</div>
+              <div class="hava-sicaklik" id="hava-sicaklik">—°</div>
+              <div class="hava-durum" id="hava-durum">Yükleniyor...</div>
+              <div class="hava-detay">
+                <span>💧 <span id="hava-nem">—</span>%</span>
+                <span>🌬️ <span id="hava-ruzgar">—</span> km/h</span>
               </div>
             </div>
           </div>
-
-          <!-- Son Bildirimler -->
-          <div class="card">
-            <div class="card-title" style="margin-bottom:14px">🔔 Son Bildirimler</div>
-            <div id="panel-notif-liste"></div>
-          </div>
         </div>
-      </section>
+      </div>
 
-      <!-- ════ ŞANTİYELER ════ -->
-      <section class="page" id="page-santiyeler">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">🏗️ Şantiyeler</h2>
-          <button class="btn btn-primary" onclick="modalAc('modal-santiye')" aria-label="Yeni şantiye ekle">
-            ＋ Yeni Şantiye
-          </button>
+      <!-- ŞANTİYELER -->
+      <div class="sayfa" id="sayfa-santiyeler">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">🏗️ Şantiyeler</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-santiye')">＋ Yeni Şantiye</button>
         </div>
-
-        <div class="flex gap-2 mb-3" style="flex-wrap:wrap">
-          <div class="search-bar">
-            <span class="search-icon">🔍</span>
-            <input type="search" id="santiye-ara" placeholder="Şantiye ara..." oninput="santiyeleriGoster()" aria-label="Şantiye ara">
-          </div>
-          <select class="form-control" style="width:auto" id="santiye-durum-filtre" onchange="santiyeleriGoster()">
-            <option value="">Tüm Durumlar</option>
-            <option value="aktif">Aktif</option>
-            <option value="tamamlandi">Tamamlandı</option>
-            <option value="beklemede">Beklemede</option>
-          </select>
-        </div>
-
-        <div class="grid grid-3" id="santiye-listesi"></div>
-      </section>
-
-      <!-- ════ PERSONEL ════ -->
-      <section class="page" id="page-personel">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">👷 Personel</h2>
-          <button class="btn btn-primary" onclick="modalAc('modal-personel')">＋ Personel Ekle</button>
-        </div>
-
-        <div class="card">
-          <div class="flex gap-2 mb-3" style="flex-wrap:wrap">
-            <div class="search-bar">
-              <span class="search-icon">🔍</span>
-              <input type="search" id="personel-ara" placeholder="İsim, görev veya şantiye ara..." oninput="personelGoster()" aria-label="Personel ara">
+        <div class="grid-3" id="santiyeler-listesi"></div>
+        <div id="personel-bolum" style="display:none;margin-top:20px">
+          <div class="secili-santiye-banner">
+            <div>
+              <div class="ssb-adi" id="secili-santiye-adi"></div>
+              <div class="ssb-alt">Personel ve takım yönetimi</div>
             </div>
-            <select class="form-control" style="width:auto" id="personel-santiye-filtre" onchange="personelGoster()">
+            <button class="btn btn-mavi btn-sm" onclick="document.getElementById('personel-bolum').style.display='none'">✕</button>
+          </div>
+          <div class="grid-2">
+            <div class="kart">
+              <div class="kart-baslik">👤 Personel Ekle</div>
+              <div class="form-group">
+                <label>Ad Soyad</label>
+                <input type="text" id="p-adi" placeholder="Personel adı">
+              </div>
+              <div class="form-group">
+                <label>Usta / Kalfa / İşçi</label>
+                <select id="p-tip">
+                  <option value="usta">Usta</option>
+                  <option value="kalfa">Kalfa</option>
+                  <option value="isci">İşçi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" id="p-telefon" placeholder="0555 555 55 55">
+              </div>
+              <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="personelKaydet()">Personel Ekle</button>
+            </div>
+            <div class="kart">
+              <div class="kart-baslik">👥 Takım Ekle / Günlük Çalışma</div>
+              <div class="form-group">
+                <label>Tarih</label>
+                <input type="date" id="st-tarih">
+              </div>
+              <div class="form-group">
+                <label>Takım Adı / Ekip</label>
+                <input type="text" id="st-takim-adi" placeholder="Örn: Kalıpçı Ekibi">
+              </div>
+              <div class="form-group">
+                <label>Kişi Sayısı</label>
+                <input type="number" id="st-kisi" min="1" value="1">
+              </div>
+              <div class="form-group">
+                <label>Kat</label>
+                <select id="st-kat"></select>
+              </div>
+              <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="santiyeTakimEkle()">Kaydet</button>
+            </div>
+          </div>
+          <div class="kart" style="margin-top:0">
+            <div class="kart-baslik">📅 Günlük Çalışma Geçmişi</div>
+            <div id="st-gunluk-liste"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAKIMLAR -->
+      <div class="sayfa" id="sayfa-takimlar">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">👥 Takımlar</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-takim')">＋ Yeni Takım</button>
+        </div>
+        <div id="takimlar-listesi"></div>
+        <div id="takim-calisma-bolum" style="display:none;margin-top:16px">
+          <div class="kart">
+            <div class="kart-baslik">⏱️ Çalışma Kaydı — <span id="takim-calisma-adi"></span></div>
+            <div class="grid-2">
+              <div class="form-group"><label>Tarih</label><input type="date" id="tc-tarih"></div>
+              <div class="form-group"><label>Şantiye</label><select id="tc-santiye"></select></div>
+              <div class="form-group"><label>Çalışma Saati</label><input type="number" id="tc-saat" min="0" max="24" step="0.5"></div>
+              <div class="form-group"><label>Not</label><input type="text" id="tc-not" placeholder="İsteğe bağlı"></div>
+            </div>
+            <button class="btn btn-sari" onclick="takimCalismaKaydet()">Kaydet</button>
+          </div>
+          <div class="kart"><div class="kart-baslik">📜 Çalışma Geçmişi</div><div id="takim-calisma-gecmis"></div></div>
+        </div>
+      </div>
+
+      <!-- YOKLAMA -->
+      <div class="sayfa" id="sayfa-yoklama">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:18px">✅ Yoklama</div>
+        <div class="kart">
+          <div class="grid-2" style="margin-bottom:14px">
+            <div class="form-group" style="margin:0">
+              <label>Şantiye</label>
+              <select id="yoklama-santiye" onchange="yoklamaYukle()"></select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Tarih</label>
+              <input type="date" id="yoklama-tarih" onchange="yoklamaYukle()">
+            </div>
+          </div>
+          <div id="yoklama-icerik">
+            <div class="bos-durum"><div class="bos-durum-ikon">✅</div><div class="bos-durum-metin">Şantiye ve tarih seçin</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GÖREVLER -->
+      <div class="sayfa" id="sayfa-gorevler">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">📋 Görevler</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-gorev')">＋ Yeni Görev</button>
+        </div>
+        <div class="kart" style="margin-bottom:14px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <select id="gorev-filtre-santiye" onchange="gorevleriGoster()" style="padding:6px 10px;border:1.5px solid var(--sinir);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.82rem">
               <option value="">Tüm Şantiyeler</option>
             </select>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Personel</th>
-                  <th>Görev</th>
-                  <th>Şantiye</th>
-                  <th>Telefon</th>
-                  <th>Durum</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody id="personel-tablo"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ════ YOKLAMA ════ -->
-      <section class="page" id="page-yoklama">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">✅ Günlük Yoklama</h2>
-          <div class="flex gap-2">
-            <input type="date" class="form-control" id="yoklama-tarih" style="width:auto" onchange="yoklamaYukle()">
-            <select class="form-control" id="yoklama-santiye" style="width:auto" onchange="yoklamaYukle()">
-              <option value="">Şantiye Seç</option>
+            <select id="gorev-filtre-durum" onchange="gorevleriGoster()" style="padding:6px 10px;border:1.5px solid var(--sinir);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.82rem">
+              <option value="">Tüm Durumlar</option>
+              <option value="bekliyor">Bekliyor</option>
+              <option value="devam">Devam Ediyor</option>
+              <option value="tamamlandi">Tamamlandı</option>
             </select>
           </div>
         </div>
+        <div id="gorevler-listesi"></div>
+      </div>
 
-        <div class="card" id="yoklama-ozet" style="margin-bottom:12px;display:none">
-          <div class="flex gap-3" style="flex-wrap:wrap" id="yoklama-istatistik"></div>
-        </div>
+      <!-- RAPORLAR -->
+      <div class="sayfa" id="sayfa-raporlar">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:18px">📊 Raporlar</div>
+        <div id="rapor-icerik"></div>
+      </div>
 
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Personel Listesi</div>
-            <button class="btn btn-primary btn-sm" onclick="yoklamaKaydet()">💾 Kaydet</button>
+      <!-- TAKVİM -->
+      <div class="sayfa" id="sayfa-takvim">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">📅 Takvim</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="panel-ay-btn" style="padding:5px 12px" onclick="takvimAyDegis(-1)">‹ Önceki</button>
+            <span class="panel-ay-adi" id="takvim-ay-baslik" style="font-size:1rem"></span>
+            <button class="panel-ay-btn" style="padding:5px 12px" onclick="takvimAyDegis(1)">Sonraki ›</button>
           </div>
-          <div class="attendance-grid" id="yoklama-liste"></div>
         </div>
-      </section>
-
-      <!-- ════ GÖREVLER ════ -->
-      <section class="page" id="page-gorevler">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">📋 Görev Yönetimi</h2>
-          <button class="btn btn-primary" onclick="modalAc('modal-gorev')">＋ Yeni Görev</button>
+        <div class="kart">
+          <div class="takvim-grid" id="takvim-basliklar"></div>
+          <div class="takvim-grid" id="takvim-icerik"></div>
         </div>
+        <div id="gun-detay-panel" style="display:none;margin-top:16px"></div>
+      </div>
 
-        <div class="flex gap-2 mb-3" style="flex-wrap:wrap">
-          <select class="form-control" style="width:auto" id="gorev-santiye-filtre" onchange="gorevleriGoster()">
-            <option value="">Tüm Şantiyeler</option>
-          </select>
-          <select class="form-control" style="width:auto" id="gorev-oncelik-filtre" onchange="gorevleriGoster()">
-            <option value="">Tüm Öncelikler</option>
-            <option value="yuksek">Yüksek</option>
-            <option value="orta">Orta</option>
-            <option value="dusuk">Düşük</option>
-          </select>
+      <!-- MALİYET -->
+      <div class="sayfa" id="sayfa-maliyet">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">💰 Malzeme & İşçilik</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-maliyet')">＋ Kayıt Ekle</button>
         </div>
-
-        <div class="kanban" id="gorev-kanban"></div>
-      </section>
-
-      <!-- ════ GÜNLÜK RAPOR ════ -->
-      <section class="page" id="page-gunluk-rapor">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">📝 Günlük Rapor</h2>
-          <div class="flex gap-2">
-            <input type="date" class="form-control" id="rapor-tarih" style="width:auto">
-            <select class="form-control" id="rapor-santiye" style="width:auto">
-              <option value="">Şantiye Seç</option>
+        <div class="grid-3" id="maliyet-ozet"></div>
+        <div class="kart">
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+            <select id="mal-filtre-santiye" onchange="maliyetGoster()" style="padding:6px 10px;border:1.5px solid var(--sinir);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.82rem">
+              <option value="">Tüm Şantiyeler</option>
             </select>
-          </div>
-        </div>
-
-        <div class="grid grid-2">
-          <div class="card">
-            <div class="card-title" style="margin-bottom:14px">📋 Rapor Detayları</div>
-
-            <div class="form-group">
-              <label>Çalışan Personel Sayısı</label>
-              <input type="number" class="form-control" id="rapor-calisan" min="0" placeholder="0">
-            </div>
-            <div class="form-group">
-              <label>Hava Durumu</label>
-              <select class="form-control" id="rapor-hava">
-                <option value="gunesli">☀️ Güneşli</option>
-                <option value="bulutlu">⛅ Bulutlu</option>
-                <option value="yagmurlu">🌧️ Yağmurlu</option>
-                <option value="karli">❄️ Karlı</option>
-                <option value="ruzgarli">💨 Rüzgarlı</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Yapılan İşler</label>
-              <textarea class="form-control" id="rapor-isler" rows="4" placeholder="Bugün yapılan çalışmaları yazın..."></textarea>
-            </div>
-            <div class="form-group">
-              <label>Sorunlar / Engeller</div>
-              <textarea class="form-control" id="rapor-sorunlar" rows="3" placeholder="Karşılaşılan sorunları yazın..."></textarea>
-            </div>
-            <div class="form-group">
-              <label>Günün Değerlendirmesi</label>
-              <div class="report-score" id="rapor-puan-stars">
-                <span class="score-star" data-puan="1" onclick="raporPuanSec(1)">⭐</span>
-                <span class="score-star" data-puan="2" onclick="raporPuanSec(2)">⭐</span>
-                <span class="score-star" data-puan="3" onclick="raporPuanSec(3)">⭐</span>
-                <span class="score-star" data-puan="4" onclick="raporPuanSec(4)">⭐</span>
-                <span class="score-star" data-puan="5" onclick="raporPuanSec(5)">⭐</span>
-              </div>
-            </div>
-            <button class="btn btn-primary btn-block" onclick="gunlukRaporKaydet()">💾 Raporu Kaydet</button>
-          </div>
-
-          <div class="card">
-            <div class="card-title" style="margin-bottom:14px">📚 Geçmiş Raporlar</div>
-            <div id="gecmis-raporlar-liste">
-              <div class="empty-state">
-                <div class="empty-icon">📝</div>
-                <div class="empty-title">Rapor bulunamadı</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ════ MALZEME & STOK ════ -->
-      <section class="page" id="page-malzeme">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">📦 Malzeme & Stok</h2>
-          <button class="btn btn-primary" onclick="modalAc('modal-malzeme')">＋ Malzeme Ekle</button>
-        </div>
-
-        <div class="grid grid-3 mb-3" id="stok-stats"></div>
-
-        <div class="card">
-          <div class="card-header">
-            <div class="search-bar">
-              <span class="search-icon">🔍</span>
-              <input type="search" id="malzeme-ara" placeholder="Malzeme ara..." oninput="malzemeGoster()" aria-label="Malzeme ara">
-            </div>
-            <select class="form-control" style="width:auto" id="malzeme-kategori" onchange="malzemeGoster()">
-              <option value="">Tüm Kategoriler</option>
-              <option value="insaat">İnşaat</option>
-              <option value="elektrik">Elektrik</option>
-              <option value="boru">Boru/Tesisat</option>
-              <option value="ahsap">Ahşap</option>
+            <select id="mal-filtre-tur" onchange="maliyetGoster()" style="padding:6px 10px;border:1.5px solid var(--sinir);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.82rem">
+              <option value="">Tüm Türler</option>
+              <option value="malzeme">Malzeme</option>
+              <option value="iscilik">İşçilik</option>
+              <option value="ekipman">Ekipman</option>
               <option value="diger">Diğer</option>
             </select>
           </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Malzeme</th>
-                  <th>Kategori</th>
-                  <th>Miktar</th>
-                  <th>Birim</th>
-                  <th>Stok Durumu</th>
-                  <th>Şantiye</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody id="malzeme-tablo"></tbody>
-            </table>
-          </div>
+          <div id="maliyet-liste"></div>
         </div>
-      </section>
+      </div>
 
-      <!-- ════ FOTOĞRAFLAR ════ -->
-      <section class="page" id="page-fotograflar">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">📸 Saha Fotoğrafları</h2>
-          <div class="flex gap-2">
-            <select class="form-control" id="foto-santiye-filtre" style="width:auto" onchange="fotograflariGoster()">
-              <option value="">Tüm Şantiyeler</option>
+      <!-- ANLAŞMA -->
+      <div class="sayfa" id="sayfa-anlasma">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">📒 Anlaşmalar Defteri</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-anlasma')">＋ Anlaşma Ekle</button>
+        </div>
+        <div class="kart" style="margin-bottom:14px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <select id="anl-filtre-tur" onchange="anlasmalariGoster()" style="padding:6px 10px;border:1.5px solid var(--sinir);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.82rem">
+              <option value="">Tüm Türler</option>
+              <option value="iscilik">İşçilik</option>
+              <option value="malzeme">Malzeme</option>
+              <option value="nakliye">Nakliye</option>
+              <option value="ekipman">Ekipman</option>
             </select>
+            <button class="btn btn-mavi btn-sm" onclick="anl_filtreSifirla()">Sıfırla</button>
           </div>
         </div>
+        <div id="anlasma-liste"></div>
+      </div>
 
-        <div class="card mb-3">
-          <div class="card-title mb-3">📤 Fotoğraf Yükle</div>
-          <div class="flex gap-2 mb-3" style="flex-wrap:wrap">
-            <select class="form-control" id="foto-santiye-sec" style="width:auto">
-              <option value="">Şantiye Seç</option>
+      <!-- SİPARİŞ -->
+      <div class="sayfa" id="sayfa-siparis">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">📦 Malzeme Sipariş Takibi</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-siparis')">＋ Sipariş Ekle</button>
+        </div>
+        <div id="siparis-liste"></div>
+      </div>
+
+      <!-- İLERLEME -->
+      <div class="sayfa" id="sayfa-ilerleme">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:18px">📐 İş İlerleme Durumu</div>
+        <div id="ilerleme-icerik"></div>
+      </div>
+
+      <!-- İŞ PROGRAMI -->
+      <div class="sayfa" id="sayfa-isprogrami">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:18px">📅 İş Programı</div>
+        <div class="kart" style="margin-bottom:14px">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <select id="isp-santiye-sec" onchange="ispHazirla()" style="padding:7px 12px;border:1.5px solid var(--sinir);border-radius:8px;font-family:'DM Sans',sans-serif">
+              <option value="">Şantiye Seçin</option>
             </select>
-            <input type="text" class="form-control" id="foto-aciklama" placeholder="Açıklama (isteğe bağlı)" style="max-width:280px">
+            <button class="btn btn-mavi btn-sm" onclick="ispKalemEkle()">＋ Kalem Ekle</button>
+            <button class="btn btn-yesil btn-sm" onclick="ispExcelIndir()">📥 Excel</button>
+            <button class="btn btn-kirmizi btn-sm" onclick="ispPdfIndir()">📄 PDF</button>
           </div>
-          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('foto-input').click()">
-            <input type="file" id="foto-input" accept="image/*" multiple onchange="fotografYukle(this)">
-            <div style="font-size:2rem;margin-bottom:8px">📷</div>
-            <div style="font-weight:600;margin-bottom:4px">Fotoğraf seçin veya sürükleyin</div>
-            <div style="font-size:.8rem;color:var(--text-muted)">JPG, PNG, WEBP — Maks 10MB</div>
-          </div>
+          <div id="isp-proje-bilgi" style="margin-top:12px"></div>
         </div>
+        <div class="isp-tablo-kap"><div id="isp-tablo-icerik"></div></div>
+        <div id="isp-renk-aciklama" style="display:flex;gap:10px;margin-top:10px;font-size:0.75rem;flex-wrap:wrap"></div>
+      </div>
 
-        <div id="foto-grid-wrap">
-          <div class="photo-grid" id="foto-grid"></div>
+      <!-- KULLANICILAR -->
+      <div class="sayfa" id="sayfa-kullanicilar">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">👤 Kullanıcı Yönetimi</div>
+          <button class="btn btn-sari" onclick="modalAc('modal-kullanici')">＋ Kullanıcı Ekle</button>
         </div>
-      </section>
-
-      <!-- ════ RAPORLAR ════ -->
-      <section class="page" id="page-raporlar">
-        <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:18px">📈 Raporlar & Analizler</h2>
-
-        <div class="grid grid-3 mb-3" id="rapor-ozet-stats"></div>
-
-        <div class="grid grid-2">
-          <div class="card">
-            <div class="card-title mb-3">📊 Şantiye Bazlı İlerleme</div>
-            <div id="rapor-ilerleme-liste"></div>
-          </div>
-
-          <div class="card">
-            <div class="card-title mb-3">👷 Personel Devam Özeti</div>
-            <div id="rapor-devam-liste"></div>
-          </div>
+        <div class="kart">
+          <div id="kullanici-liste"></div>
         </div>
-      </section>
+      </div>
 
-      <!-- ════ MALİYET ════ -->
-      <section class="page" id="page-maliyet">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">💰 Maliyet Takibi</h2>
-          <button class="btn btn-primary" onclick="modalAc('modal-maliyet')">＋ Kayıt Ekle</button>
-        </div>
+    </div><!-- /main -->
+  </div><!-- /content -->
+</div><!-- /app-shell -->
 
-        <div class="grid grid-3 mb-3" id="maliyet-stats"></div>
+<!-- ══════════════════════════════════════
+     MODALLER
+     ══════════════════════════════════════ -->
 
-        <div class="card">
-          <div class="card-header">
-            <div class="search-bar">
-              <span class="search-icon">🔍</span>
-              <input type="search" id="maliyet-ara" placeholder="Kayıt ara..." oninput="maliyetGoster()" aria-label="Maliyet ara">
-            </div>
-            <div class="flex gap-2">
-              <select class="form-control" style="width:auto" id="maliyet-santiye-filtre" onchange="maliyetGoster()">
-                <option value="">Tüm Şantiyeler</option>
-              </select>
-              <select class="form-control" style="width:auto" id="maliyet-tur-filtre" onchange="maliyetGoster()">
-                <option value="">Tüm Türler</option>
-                <option value="malzeme">Malzeme</option>
-                <option value="iscilik">İşçilik</option>
-                <option value="ekipman">Ekipman</option>
-                <option value="diger">Diğer</option>
-              </select>
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Tarih</th>
-                  <th>Açıklama</th>
-                  <th>Tür</th>
-                  <th>Şantiye</th>
-                  <th>Tutar</th>
-                  <th>Durum</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody id="maliyet-tablo"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ════ SİPARİŞLER ════ -->
-      <section class="page" id="page-siparisler">
-        <div class="flex items-center justify-between mb-3">
-          <h2 style="font-size:1.15rem;font-weight:800">🛒 Sipariş Takibi</h2>
-          <button class="btn btn-primary" onclick="modalAc('modal-siparis')">＋ Sipariş Ekle</button>
-        </div>
-        <div class="card">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Tarih</th>
-                  <th>Ürün</th>
-                  <th>Tedarikçi</th>
-                  <th>Şantiye</th>
-                  <th>Miktar</th>
-                  <th>Tutar</th>
-                  <th>Durum</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody id="siparis-tablo"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ════ AYARLAR ════ -->
-      <section class="page" id="page-ayarlar">
-        <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:18px">⚙️ Ayarlar</h2>
-
-        <div class="grid grid-2">
-          <div class="card">
-            <div class="card-title mb-3">🎨 Görünüm</div>
-            <div class="form-group">
-              <label>Tema</label>
-              <div class="flex gap-2">
-                <button class="btn btn-secondary btn-sm" onclick="temaDegistir('light')" id="btn-light-mode">☀️ Açık</button>
-                <button class="btn btn-secondary btn-sm" onclick="temaDegistir('dark')" id="btn-dark-mode">🌙 Koyu</button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Konum (Hava Durumu)</label>
-              <div class="flex gap-2">
-                <input type="text" class="form-control" id="konum-input" placeholder="Şehir adı (örn: Kayseri)">
-                <button class="btn btn-primary btn-sm" onclick="konumGuncelle()">Güncelle</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title mb-3">👤 Kullanıcı Bilgileri</div>
-            <div class="form-group">
-              <label>Ad Soyad</label>
-              <input type="text" class="form-control" id="ayar-ad" placeholder="Ad Soyad">
-            </div>
-            <div class="form-group">
-              <label>Şirket Adı</label>
-              <input type="text" class="form-control" id="ayar-sirket" placeholder="Şirket">
-            </div>
-            <div class="form-group">
-              <label>PIN Değiştir</label>
-              <input type="password" class="form-control" id="ayar-pin" placeholder="Yeni 4 haneli PIN" maxlength="4">
-            </div>
-            <button class="btn btn-primary" onclick="ayarlariKaydet()">💾 Kaydet</button>
-          </div>
-        </div>
-
-        <div class="card mt-2">
-          <div class="card-title mb-3">👥 Kullanıcı Yönetimi</div>
-          <button class="btn btn-primary btn-sm mb-3" onclick="modalAc('modal-kullanici')">＋ Kullanıcı Ekle</button>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ad Soyad</th>
-                  <th>Rol</th>
-                  <th>Son Giriş</th>
-                  <th>Durum</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody id="kullanici-tablo"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     MODALS
-     ════════════════════════════════════════ -->
-
-<!-- Şantiye Modal -->
-<div class="modal-overlay" id="modal-santiye" role="dialog" aria-modal="true" aria-labelledby="modal-santiye-title">
+<!-- Şantiye Ekle -->
+<div class="modal-overlay" id="modal-santiye">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-santiye-title">🏗️ Şantiye Ekle / Düzenle</div>
-      <button class="modal-close" onclick="modalKapat('modal-santiye')" aria-label="Kapat">✕</button>
+    <div class="modal-baslik">🏗️ Yeni Şantiye <button class="modal-kapat" onclick="modalKapat('modal-santiye')">✕</button></div>
+    <div class="form-group"><label>Şantiye Adı *</label><input type="text" id="s-adi" placeholder="Örn: Kayseri Konut Projesi"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Konum / Şehir</label><input type="text" id="s-konum" placeholder="Kayseri"></div>
+      <div class="form-group"><label>Renk</label><input type="color" id="s-renk" value="#2563eb" style="height:40px;padding:4px"></div>
+      <div class="form-group"><label>Başlangıç</label><input type="date" id="s-baslangic"></div>
+      <div class="form-group"><label>Bitiş</label><input type="date" id="s-bitis"></div>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="s-id">
-      <div class="grid grid-2">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Şantiye Adı *</label>
-          <input type="text" class="form-control" id="s-ad" placeholder="Örn: Kayseri Konut Projesi" maxlength="80">
-          <span class="field-error">Şantiye adı zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Şehir *</label>
-          <input type="text" class="form-control" id="s-sehir" placeholder="Şehir" maxlength="40">
-          <span class="field-error">Şehir zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Durum</label>
-          <select class="form-control" id="s-durum">
-            <option value="aktif">Aktif</option>
-            <option value="beklemede">Beklemede</option>
-            <option value="tamamlandi">Tamamlandı</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Başlangıç Tarihi</label>
-          <input type="date" class="form-control" id="s-baslangic">
-        </div>
-        <div class="form-group">
-          <label>Bitiş Tarihi (Tahmini)</label>
-          <input type="date" class="form-control" id="s-bitis">
-        </div>
-        <div class="form-group">
-          <label>Bütçe (₺)</label>
-          <input type="number" class="form-control" id="s-butce" min="0" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label>İlerleme (%)</label>
-          <input type="number" class="form-control" id="s-ilerleme" min="0" max="100" placeholder="0">
-        </div>
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Notlar</label>
-          <textarea class="form-control" id="s-notlar" rows="3" placeholder="Ek notlar..."></textarea>
-        </div>
-      </div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;margin-bottom:10px;color:var(--metin-acik)">KAT BİLGİLERİ</div>
+    <div class="grid-3">
+      <div class="form-group"><label>Normal Kat</label><input type="number" id="s-kat" min="0" value="0" oninput="sToplamGuncelle()"></div>
+      <div class="form-group"><label>Zemin</label><input type="number" id="s-zemin" min="0" value="0" oninput="sToplamGuncelle()"></div>
+      <div class="form-group"><label>Bodrum</label><input type="number" id="s-bodrum" min="0" value="0" oninput="sToplamGuncelle()"></div>
+      <div class="form-group"><label>Çatı</label><input type="number" id="s-cati" min="0" value="0" oninput="sToplamGuncelle()"></div>
+      <div class="form-group"><label>Daire Sayısı</label><input type="number" id="s-daire" min="0" value="0"></div>
+      <div class="form-group"><label>Daire Tipi</label><select id="s-daire-tip"><option value="numara">Numara</option><option value="harf">Harf</option></select></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-santiye')">İptal</button>
-      <button class="btn btn-primary" onclick="santiyeKaydet()">💾 Kaydet</button>
-    </div>
+    <div id="s-toplam-kat-bilgi" style="font-size:0.78rem;color:var(--ana);margin-bottom:12px"></div>
+    <div class="form-group"><label>Notlar</label><textarea id="s-aciklama" rows="2" placeholder="Ek notlar..."></textarea></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="santiyeKaydet()">💾 Kaydet</button>
   </div>
 </div>
 
-<!-- Personel Modal -->
-<div class="modal-overlay" id="modal-personel" role="dialog" aria-modal="true" aria-labelledby="modal-personel-title">
+<!-- Şantiye Düzenle -->
+<div class="modal-overlay" id="modal-santiye-duzenle">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-personel-title">👷 Personel Ekle / Düzenle</div>
-      <button class="modal-close" onclick="modalKapat('modal-personel')" aria-label="Kapat">✕</button>
+    <div class="modal-baslik">✏️ Şantiye Düzenle <button class="modal-kapat" onclick="modalKapat('modal-santiye-duzenle')">✕</button></div>
+    <input type="hidden" id="sd-id">
+    <div class="form-group"><label>Şantiye Adı *</label><input type="text" id="sd-adi"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Konum</label><input type="text" id="sd-konum"></div>
+      <div class="form-group"><label>Renk</label><input type="color" id="sd-renk" style="height:40px;padding:4px"></div>
+      <div class="form-group"><label>Başlangıç</label><input type="date" id="sd-baslangic"></div>
+      <div class="form-group"><label>Bitiş</label><input type="date" id="sd-bitis"></div>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="p-id">
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label>Ad Soyad *</label>
-          <input type="text" class="form-control" id="p-ad" placeholder="Ad Soyad" maxlength="60">
-          <span class="field-error">Ad Soyad zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Görev / Unvan *</label>
-          <input type="text" class="form-control" id="p-gorev" placeholder="Örn: Kalıpçı, Elektrikçi" maxlength="60">
-          <span class="field-error">Görev zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Telefon</label>
-          <input type="tel" class="form-control" id="p-telefon" placeholder="0555 555 55 55">
-        </div>
-        <div class="form-group">
-          <label>Günlük Ücret (₺)</label>
-          <input type="number" class="form-control" id="p-ucret" min="0" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label>Atandığı Şantiye</label>
-          <select class="form-control" id="p-santiye"></select>
-        </div>
-        <div class="form-group">
-          <label>Durum</label>
-          <select class="form-control" id="p-durum">
-            <option value="aktif">Aktif</option>
-            <option value="izinli">İzinli</option>
-            <option value="ayrildi">Ayrıldı</option>
-          </select>
-        </div>
-      </div>
+    <div class="grid-3">
+      <div class="form-group"><label>Normal Kat</label><input type="number" id="sd-kat" min="0" oninput="sdToplamGuncelle()"></div>
+      <div class="form-group"><label>Zemin</label><input type="number" id="sd-zemin" min="0" oninput="sdToplamGuncelle()"></div>
+      <div class="form-group"><label>Bodrum</label><input type="number" id="sd-bodrum" min="0" oninput="sdToplamGuncelle()"></div>
+      <div class="form-group"><label>Çatı</label><input type="number" id="sd-cati" min="0" oninput="sdToplamGuncelle()"></div>
+      <div class="form-group"><label>Daire</label><input type="number" id="sd-daire" min="0"></div>
+      <div class="form-group"><label>Daire Tipi</label><select id="sd-daire-tip"><option value="numara">Numara</option><option value="harf">Harf</option></select></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-personel')">İptal</button>
-      <button class="btn btn-primary" onclick="personelKaydet()">💾 Kaydet</button>
-    </div>
+    <div id="sd-toplam-kat-bilgi" style="font-size:0.78rem;color:var(--ana);margin-bottom:12px"></div>
+    <div class="form-group"><label>Notlar</label><textarea id="sd-aciklama" rows="2"></textarea></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="santiyeGuncelle()">💾 Güncelle</button>
   </div>
 </div>
 
-<!-- Görev Modal -->
-<div class="modal-overlay" id="modal-gorev" role="dialog" aria-modal="true" aria-labelledby="modal-gorev-title">
+<!-- Görev Ekle -->
+<div class="modal-overlay" id="modal-gorev">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-gorev-title">📋 Görev Ekle / Düzenle</div>
-      <button class="modal-close" onclick="modalKapat('modal-gorev')" aria-label="Kapat">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="g-id">
-      <div class="form-group">
-        <label>Görev Başlığı *</label>
-        <input type="text" class="form-control" id="g-baslik" placeholder="Görevi tanımlayın" maxlength="100">
-        <span class="field-error">Görev başlığı zorunludur.</span>
+    <div class="modal-baslik">📋 Görev Ekle <button class="modal-kapat" onclick="modalKapat('modal-gorev')">✕</button></div>
+    <input type="hidden" id="g-id">
+    <div class="form-group"><label>Görev Başlığı *</label><input type="text" id="g-baslik" placeholder="Görev başlığı"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Şantiye</label><select id="g-santiye"></select></div>
+      <div class="form-group"><label>Öncelik</label>
+        <select id="g-oncelik">
+          <option value="dusuk">🟢 Düşük</option>
+          <option value="orta" selected>🟡 Orta</option>
+          <option value="yuksek">🔴 Yüksek</option>
+        </select>
       </div>
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label>Şantiye</label>
-          <select class="form-control" id="g-santiye"></select>
-        </div>
-        <div class="form-group">
-          <label>Atanan Kişi</label>
-          <select class="form-control" id="g-atanan"></select>
-        </div>
-        <div class="form-group">
-          <label>Öncelik</label>
-          <select class="form-control" id="g-oncelik">
-            <option value="dusuk">🟢 Düşük</option>
-            <option value="orta" selected>🟡 Orta</option>
-            <option value="yuksek">🔴 Yüksek</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Son Tarih</label>
-          <input type="date" class="form-control" id="g-tarih">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Açıklama</label>
-        <textarea class="form-control" id="g-aciklama" rows="3" placeholder="Görev detayları..."></textarea>
+      <div class="form-group"><label>Son Tarih</label><input type="date" id="g-tarih"></div>
+      <div class="form-group"><label>Durum</label>
+        <select id="g-durum">
+          <option value="bekliyor">Bekliyor</option>
+          <option value="devam">Devam Ediyor</option>
+          <option value="tamamlandi">Tamamlandı</option>
+        </select>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-gorev')">İptal</button>
-      <button class="btn btn-primary" onclick="gorevKaydet()">💾 Kaydet</button>
-    </div>
+    <div class="form-group"><label>Açıklama</label><textarea id="g-aciklama" rows="3" placeholder="Detaylar..."></textarea></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="gorevKaydet()">💾 Kaydet</button>
   </div>
 </div>
 
-<!-- Malzeme Modal -->
-<div class="modal-overlay" id="modal-malzeme" role="dialog" aria-modal="true">
+<!-- Takım Ekle -->
+<div class="modal-overlay" id="modal-takim">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">📦 Malzeme Ekle / Düzenle</div>
-      <button class="modal-close" onclick="modalKapat('modal-malzeme')" aria-label="Kapat">✕</button>
+    <div class="modal-baslik">👥 Takım Ekle <button class="modal-kapat" onclick="modalKapat('modal-takim')">✕</button></div>
+    <input type="hidden" id="t-id">
+    <div class="form-group"><label>Takım Adı *</label><input type="text" id="t-adi" placeholder="Örn: Kalıpçı Ekibi"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Şantiye</label><select id="t-santiye"></select></div>
+      <div class="form-group"><label>Usta Adı</label><input type="text" id="t-usta" placeholder="Usta adı"></div>
+      <div class="form-group"><label>Kişi Sayısı</label><input type="number" id="t-kisi" min="1" value="1"></div>
+      <div class="form-group"><label>Günlük Ücret (₺)</label><input type="number" id="t-ucret" min="0" placeholder="0"></div>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="m-id">
-      <div class="grid grid-2">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Malzeme Adı *</label>
-          <input type="text" class="form-control" id="m-ad" placeholder="Örn: Çimento 42.5R" maxlength="80">
-          <span class="field-error">Malzeme adı zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Kategori</label>
-          <select class="form-control" id="m-kategori">
-            <option value="insaat">İnşaat</option>
-            <option value="elektrik">Elektrik</option>
-            <option value="boru">Boru/Tesisat</option>
-            <option value="ahsap">Ahşap</option>
-            <option value="diger">Diğer</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Birim</label>
-          <select class="form-control" id="m-birim">
-            <option value="adet">Adet</option>
-            <option value="kg">Kg</option>
-            <option value="ton">Ton</option>
-            <option value="m2">m²</option>
-            <option value="m3">m³</option>
-            <option value="litre">Litre</option>
-            <option value="çuval">Çuval</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mevcut Miktar *</label>
-          <input type="number" class="form-control" id="m-miktar" min="0" placeholder="0">
-          <span class="field-error">Miktar zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Minimum Stok</label>
-          <input type="number" class="form-control" id="m-min-stok" min="0" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label>Birim Fiyat (₺)</label>
-          <input type="number" class="form-control" id="m-fiyat" min="0" step="0.01" placeholder="0.00">
-        </div>
-        <div class="form-group">
-          <label>Şantiye</label>
-          <select class="form-control" id="m-santiye"></select>
-        </div>
-        <div class="form-group">
-          <label>Tedarikçi</label>
-          <input type="text" class="form-control" id="m-tedarikci" placeholder="Tedarikçi adı">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-malzeme')">İptal</button>
-      <button class="btn btn-primary" onclick="malzemeKaydet()">💾 Kaydet</button>
-    </div>
+    <div class="form-group"><label>Uzmanlık / Not</label><textarea id="t-not" rows="2" placeholder="Notlar..."></textarea></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="takimKaydet()">💾 Kaydet</button>
   </div>
 </div>
 
-<!-- Maliyet Modal -->
-<div class="modal-overlay" id="modal-maliyet" role="dialog" aria-modal="true">
+<!-- Maliyet Ekle -->
+<div class="modal-overlay" id="modal-maliyet">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">💰 Maliyet Kaydı</div>
-      <button class="modal-close" onclick="modalKapat('modal-maliyet')" aria-label="Kapat">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="mc-id">
-      <div class="grid grid-2">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Açıklama *</label>
-          <input type="text" class="form-control" id="mc-aciklama" placeholder="Ne için harcama yapıldı?" maxlength="120">
-          <span class="field-error">Açıklama zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Tür</label>
-          <select class="form-control" id="mc-tur">
-            <option value="malzeme">📦 Malzeme</option>
-            <option value="iscilik">👷 İşçilik</option>
-            <option value="ekipman">🔧 Ekipman</option>
-            <option value="diger">📌 Diğer</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tutar (₺) *</label>
-          <input type="number" class="form-control" id="mc-tutar" min="0" step="0.01" placeholder="0.00">
-          <span class="field-error">Tutar zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Tarih</label>
-          <input type="date" class="form-control" id="mc-tarih">
-        </div>
-        <div class="form-group">
-          <label>Şantiye</label>
-          <select class="form-control" id="mc-santiye"></select>
-        </div>
-        <div class="form-group">
-          <label>Durum</label>
-          <select class="form-control" id="mc-durum">
-            <option value="odendi">Ödendi</option>
-            <option value="bekliyor">Bekliyor</option>
-          </select>
-        </div>
+    <div class="modal-baslik">💰 Maliyet Kaydı <button class="modal-kapat" onclick="modalKapat('modal-maliyet')">✕</button></div>
+    <input type="hidden" id="mal-id">
+    <div class="form-group"><label>Açıklama *</label><input type="text" id="mal-aciklama" placeholder="Ne için?"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Tür</label>
+        <select id="mal-tur" onchange="malTurSec(this.value)">
+          <option value="malzeme">📦 Malzeme</option>
+          <option value="iscilik">👷 İşçilik</option>
+          <option value="ekipman">🔧 Ekipman</option>
+          <option value="diger">📌 Diğer</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Şantiye</label><select id="mal-santiye"></select></div>
+      <div class="form-group"><label>Miktar / Adet</label><input type="number" id="mal-miktar" min="0" step="0.01"></div>
+      <div class="form-group"><label>Birim Fiyat (₺)</label><input type="number" id="mal-fiyat" min="0" step="0.01"></div>
+      <div class="form-group"><label>Tarih</label><input type="date" id="mal-tarih"></div>
+      <div class="form-group"><label>Durum</label>
+        <select id="mal-durum">
+          <option value="odendi">Ödendi</option>
+          <option value="bekliyor">Bekliyor</option>
+          <option value="iptal">İptal</option>
+        </select>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-maliyet')">İptal</button>
-      <button class="btn btn-primary" onclick="maliyetKaydet()">💾 Kaydet</button>
-    </div>
+    <div class="form-group" id="mal-ekstra-alan"></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="maliyetKaydet()">💾 Kaydet</button>
   </div>
 </div>
 
-<!-- Kullanıcı Modal -->
-<div class="modal-overlay" id="modal-kullanici" role="dialog" aria-modal="true">
+<!-- Anlaşma Ekle -->
+<div class="modal-overlay" id="modal-anlasma">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">👤 Kullanıcı Ekle / Düzenle</div>
-      <button class="modal-close" onclick="modalKapat('modal-kullanici')" aria-label="Kapat">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="ku-id">
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label>Ad Soyad *</label>
-          <input type="text" class="form-control" id="ku-ad" maxlength="60">
-          <span class="field-error">Ad zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Rol</label>
-          <select class="form-control" id="ku-rol">
-            <option value="admin">Admin</option>
-            <option value="sahaMudusu">Saha Müdürü</option>
-            <option value="ekipLideri">Ekip Lideri</option>
-            <option value="izleyici">İzleyici</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>PIN (4 hane)</label>
-          <input type="password" class="form-control" id="ku-pin" maxlength="4" placeholder="····">
-        </div>
-        <div class="form-group">
-          <label>Durum</label>
-          <select class="form-control" id="ku-durum">
-            <option value="aktif">Aktif</option>
-            <option value="pasif">Pasif</option>
-          </select>
-        </div>
+    <div class="modal-baslik">📒 Anlaşma Ekle <button class="modal-kapat" onclick="modalKapat('modal-anlasma')">✕</button></div>
+    <input type="hidden" id="anl-id">
+    <div class="form-group"><label>Açıklama *</label><input type="text" id="anl-aciklama" placeholder="Anlaşma detayı"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Tür</label>
+        <select id="anl-tur" onchange="anlTurSec(this.value)">
+          <option value="iscilik">👷 İşçilik</option>
+          <option value="malzeme">📦 Malzeme</option>
+          <option value="nakliye">🚛 Nakliye</option>
+          <option value="ekipman">🔧 Ekipman</option>
+        </select>
       </div>
+      <div class="form-group"><label>Birim Fiyat (₺)</label><input type="number" id="anl-fiyat" min="0" step="0.01"></div>
+      <div class="form-group"><label>Birim</label><input type="text" id="anl-birim" placeholder="m², kg, adet..."></div>
+      <div class="form-group"><label>Tarih</label><input type="date" id="anl-tarih"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-kullanici')">İptal</button>
-      <button class="btn btn-primary" onclick="kullaniciKaydet()">💾 Kaydet</button>
-    </div>
+    <div class="form-group" id="anl-ekstra"></div>
+    <div class="form-group"><label>Not</label><textarea id="anl-not" rows="2" placeholder="İsteğe bağlı..."></textarea></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="anlasmayiKaydet()">💾 Kaydet</button>
   </div>
 </div>
 
-<!-- Sipariş Modal -->
-<div class="modal-overlay" id="modal-siparis" role="dialog" aria-modal="true">
+<!-- Sipariş Ekle -->
+<div class="modal-overlay" id="modal-siparis">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">🛒 Sipariş Ekle / Düzenle</div>
-      <button class="modal-close" onclick="modalKapat('modal-siparis')" aria-label="Kapat">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="sp-id">
-      <div class="grid grid-2">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Ürün Adı *</label>
-          <input type="text" class="form-control" id="sp-urun" maxlength="100">
-          <span class="field-error">Ürün adı zorunludur.</span>
-        </div>
-        <div class="form-group">
-          <label>Tedarikçi</label>
-          <input type="text" class="form-control" id="sp-tedarikci" maxlength="80">
-        </div>
-        <div class="form-group">
-          <label>Miktar</label>
-          <input type="number" class="form-control" id="sp-miktar" min="1">
-        </div>
-        <div class="form-group">
-          <label>Birim Fiyat (₺)</label>
-          <input type="number" class="form-control" id="sp-fiyat" min="0" step="0.01">
-        </div>
-        <div class="form-group">
-          <label>Şantiye</label>
-          <select class="form-control" id="sp-santiye"></select>
-        </div>
-        <div class="form-group">
-          <label>Beklenen Tarih</label>
-          <input type="date" class="form-control" id="sp-tarih">
-        </div>
-        <div class="form-group">
-          <label>Durum</label>
-          <select class="form-control" id="sp-durum">
-            <option value="bekliyor">Bekliyor</option>
-            <option value="siparis-verildi">Sipariş Verildi</option>
-            <option value="teslim-alindi">Teslim Alındı</option>
-            <option value="iptal">İptal</option>
-          </select>
-        </div>
+    <div class="modal-baslik">📦 Sipariş Ekle <button class="modal-kapat" onclick="modalKapat('modal-siparis')">✕</button></div>
+    <input type="hidden" id="sp-id">
+    <div class="form-group"><label>Malzeme Adı *</label><input type="text" id="sp-urun" placeholder="Malzeme adı"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Şantiye</label><select id="sp-santiye"></select></div>
+      <div class="form-group"><label>Tedarikçi</label><input type="text" id="sp-tedarikci"></div>
+      <div class="form-group"><label>Miktar</label><input type="number" id="sp-miktar" min="0"></div>
+      <div class="form-group"><label>Birim Fiyat (₺)</label><input type="number" id="sp-fiyat" min="0" step="0.01"></div>
+      <div class="form-group"><label>Sipariş Tarihi</label><input type="date" id="sp-tarih"></div>
+      <div class="form-group"><label>Durum</label>
+        <select id="sp-durum">
+          <option value="bekliyor">⏳ Bekliyor</option>
+          <option value="siparis">📋 Sipariş Verildi</option>
+          <option value="teslim">✅ Teslim Alındı</option>
+          <option value="iptal">❌ İptal</option>
+        </select>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="modalKapat('modal-siparis')">İptal</button>
-      <button class="btn btn-primary" onclick="siparisKaydet()">💾 Kaydet</button>
+    <div class="form-group"><label>Not</label><textarea id="sp-not" rows="2"></textarea></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="siparisKaydet()">💾 Kaydet</button>
+  </div>
+</div>
+
+<!-- Kullanıcı Ekle -->
+<div class="modal-overlay" id="modal-kullanici">
+  <div class="modal">
+    <div class="modal-baslik">👤 Kullanıcı <button class="modal-kapat" onclick="modalKapat('modal-kullanici')">✕</button></div>
+    <input type="hidden" id="ku-edit-id">
+    <div class="form-group"><label>İsim *</label><input type="text" id="ku-isim" placeholder="Ad Soyad"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Kullanıcı Adı *</label><input type="text" id="ku-kullanici" placeholder="kullanici_adi" autocomplete="off"></div>
+      <div class="form-group"><label>PIN (4 hane) *</label><input type="password" id="ku-pin" maxlength="4" inputmode="numeric" placeholder="····" autocomplete="new-password"></div>
+      <div class="form-group"><label>Rol</label>
+        <select id="ku-rol">
+          <option value="admin">👑 Admin</option>
+          <option value="sef">👷 Şef</option>
+          <option value="izleyici">👁️ İzleyici</option>
+        </select>
+      </div>
     </div>
+    <div class="form-group"><label>Not</label><input type="text" id="ku-not" placeholder="İsteğe bağlı"></div>
+    <button class="btn btn-sari" style="width:100%;justify-content:center" onclick="kullaniciKaydet()">💾 Kaydet</button>
   </div>
 </div>
 
-<!-- Bildirim Paneli -->
-<div class="notif-panel" id="notif-panel" role="complementary" aria-label="Bildirimler">
-  <div class="notif-header">
-    <div style="font-size:.9rem;font-weight:700">🔔 Bildirimler</div>
-    <button class="btn btn-ghost btn-sm" onclick="tumunuOku()">Tümünü okundu işaretle</button>
-  </div>
-  <div class="notif-list" id="notif-list"></div>
-</div>
-
-<!-- Toast Container -->
-<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-<!-- ════════════════════════════════════════
+<!-- ══════════════════════════════════════
      JAVASCRIPT
-     ════════════════════════════════════════ -->
+     ══════════════════════════════════════ -->
 <script>
-'use strict';
+// ════════════════════════════════════════════
+//   FİREBASE YAPILANDIRMA
+// ════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCEspb48y0gqke_s3iknsxx-b-PupNG0QU",
+  authDomain: "santiyepro-7237f.firebaseapp.com",
+  projectId: "santiyepro-7237f",
+  storageBucket: "santiyepro-7237f.firebasestorage.app",
+  messagingSenderId: "531945674963",
+  appId: "1:531945674963:web:6fd5fe32908fb0ee99dc26"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const DOC_REF = db.collection('santiyepro').doc('veri');
+const USERS_REF = db.collection('santiyepro').doc('kullanicilar');
 
-/* ═══════════════════════════
-   CORE: State & Storage
-   ═══════════════════════════ */
-const DB_KEY = 'santiyepro_v2';
-
-const DB = {
-  _data: null,
-
-  get() {
-    if (!this._data) {
-      try {
-        this._data = JSON.parse(localStorage.getItem(DB_KEY)) || this._defaults();
-      } catch {
-        this._data = this._defaults();
-      }
-    }
-    return this._data;
-  },
-
-  save() {
-    try {
-      localStorage.setItem(DB_KEY, JSON.stringify(this._data));
-    } catch (e) {
-      if (e.name === 'QuotaExceededError') {
-        toast('Depolama alanı dolu. Bazı veriler kaydedilemeyebilir.', 'warning');
-      }
-    }
-  },
-
-  _defaults() {
-    return {
-      santiyeler: [],
-      personel: [],
-      gorevler: [],
-      yoklamalar: {},
-      malzemeler: [],
-      maliyetler: [],
-      siparisler: [],
-      gunlukRaporlar: [],
-      fotograflar: [],
-      bildirimler: [],
-      kullanicilar: [
-        { id: 'u1', ad: 'Admin', rol: 'admin', pin: '1234', durum: 'aktif', sonGiris: new Date().toISOString() }
-      ],
-      ayarlar: {
-        aktifKullanici: 'u1',
-        konum: 'Kayseri',
-        tema: 'light'
-      }
-    };
-  }
+// ════════════════════════════════════════════
+//   VERİ YAPISI
+// ════════════════════════════════════════════
+let veri = {
+  santiyeler: [],
+  personeller: [],
+  yoklamalar: {},
+  gorevler: [],
+  stGunluk: {},
+  stTakimlar: {},
+  takimlar: [],
+  takimCalisma: {},
+  maliyetler: [],
+  anlasma: [],
+  planlar: [],
+  siparisler: [],
+  ilerleme: {}
 };
 
-/* ═══════════════════════════
-   UTILS
-   ═══════════════════════════ */
-function uid() {
-  return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
-}
+let aktifKullanici = null;
+let _kaydediliyor = false;
+let _bekleyenKayit = false;
 
-function tarihFormatla(str, format = 'short') {
-  if (!str) return '—';
+// ════════════════════════════════════════════
+//   KAYDET / YÜKLE
+// ════════════════════════════════════════════
+async function kaydet() {
+  localStorage.setItem('santiyepro', JSON.stringify(veri));
+  if (_kaydediliyor) { _bekleyenKayit = true; return; }
+  _kaydediliyor = true;
   try {
-    const d = new Date(str);
-    if (isNaN(d.getTime())) return '—';
-    if (format === 'short') return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    if (format === 'long')  return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-    if (format === 'time')  return d.toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-    return d.toLocaleDateString('tr-TR');
-  } catch { return '—'; }
+    await DOC_REF.set(veri);
+  } catch(e) {
+    toast('Bağlantı hatası, yerel kaydedildi ⚠️');
+  } finally {
+    _kaydediliyor = false;
+    if (_bekleyenKayit) { _bekleyenKayit = false; kaydet(); }
+  }
 }
 
-function bugunTarih() {
-  return new Date().toISOString().split('T')[0];
-}
-
-function paraFormatla(sayi) {
-  if (sayi == null || isNaN(sayi)) return '₺0';
-  return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 0 }).format(sayi);
-}
-
-// XSS-safe text sanitizer
-function escHtml(str) {
-  if (str == null) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function gunlukSelamlama() {
-  const saat = new Date().getHours();
-  if (saat < 12) return 'Günaydın 👋';
-  if (saat < 18) return 'İyi günler 👋';
-  return 'İyi akşamlar 👋';
-}
-
-/* ═══════════════════════════
-   UI: Toast
-   ═══════════════════════════ */
-function toast(mesaj, tip = 'info', baslik = null) {
-  const ikonlar = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-  const basliklar = { success: 'Başarılı', error: 'Hata', warning: 'Uyarı', info: 'Bilgi' };
-
-  const el = document.createElement('div');
-  el.className = `toast ${tip}`;
-  el.innerHTML = `
-    <div class="toast-icon">${ikonlar[tip] || ikonlar.info}</div>
-    <div class="toast-body">
-      <div class="toast-title">${escHtml(baslik || basliklar[tip])}</div>
-      <div class="toast-msg">${escHtml(mesaj)}</div>
-    </div>
-    <button style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px 6px;font-size:.9rem" onclick="this.parentElement.remove()">✕</button>
-  `;
-
-  const container = document.getElementById('toast-container');
-  container.appendChild(el);
-
-  setTimeout(() => {
-    el.classList.add('removing');
-    el.addEventListener('animationend', () => el.remove());
-  }, 4000);
-}
-
-/* ═══════════════════════════
-   UI: Modal
-   ═══════════════════════════ */
-function modalAc(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  // Populate selects in modal
-  _modalSantiyeDoldur(id);
-  _modalPersonelDoldur(id);
-}
-
-function modalKapat(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function _modalSantiyeDoldur(modalId) {
-  const santiyeSelects = document.querySelectorAll(`#${modalId} select[id$="-santiye"]`);
-  const santiyeler = DB.get().santiyeler;
-  santiyeSelects.forEach(sel => {
-    const val = sel.value;
-    sel.innerHTML = '<option value="">— Seçin —</option>' +
-      santiyeler.map(s => `<option value="${escHtml(s.id)}">${escHtml(s.ad)}</option>`).join('');
-    if (val) sel.value = val;
+async function yukle() {
+  const local = localStorage.getItem('santiyepro');
+  if (local) { try { veri = JSON.parse(local); } catch(e) {} }
+  const yuklemeEl = document.getElementById('sync-durum');
+  if (yuklemeEl) yuklemeEl.style.display = 'flex';
+  try {
+    const snap = await Promise.race([
+      DOC_REF.get(),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 5000))
+    ]);
+    if (snap.exists) {
+      veri = snap.data();
+      veri.santiyeler   = veri.santiyeler   || [];
+      veri.personeller  = veri.personeller  || [];
+      veri.yoklamalar   = veri.yoklamalar   || {};
+      veri.gorevler     = veri.gorevler     || [];
+      veri.stGunluk     = veri.stGunluk     || {};
+      veri.maliyetler   = veri.maliyetler   || [];
+      veri.anlasma      = veri.anlasma      || [];
+      veri.planlar      = veri.planlar      || [];
+      veri.takimlar     = veri.takimlar     || [];
+      veri.takimCalisma = veri.takimCalisma || {};
+      veri.siparisler   = veri.siparisler   || [];
+      veri.ilerleme     = veri.ilerleme     || {};
+      localStorage.setItem('santiyepro', JSON.stringify(veri));
+    }
+    if (yuklemeEl) yuklemeEl.style.display = 'none';
+    panelGuncelle();
+    toast('Veriler senkronize edildi ☁️');
+  } catch(e) {
+    if (yuklemeEl) yuklemeEl.style.display = 'none';
+    toast('Çevrimdışı modda çalışıyor 📴');
+    panelGuncelle();
+  }
+  DOC_REF.onSnapshot(snap => {
+    if (snap.exists && !_kaydediliyor) {
+      veri = snap.data();
+      veri.santiyeler   = veri.santiyeler   || [];
+      veri.personeller  = veri.personeller  || [];
+      veri.yoklamalar   = veri.yoklamalar   || {};
+      veri.gorevler     = veri.gorevler     || [];
+      veri.stGunluk     = veri.stGunluk     || {};
+      veri.maliyetler   = veri.maliyetler   || [];
+      veri.anlasma      = veri.anlasma      || [];
+      veri.takimlar     = veri.takimlar     || [];
+      veri.siparisler   = veri.siparisler   || [];
+      veri.ilerleme     = veri.ilerleme     || {};
+      localStorage.setItem('santiyepro', JSON.stringify(veri));
+      const aktifSayfa = document.querySelector('.sayfa.aktif');
+      if (aktifSayfa) {
+        const id = aktifSayfa.id.replace('sayfa-', '');
+        sayfaGit(id);
+      }
+    }
   });
 }
 
-function _modalPersonelDoldur(modalId) {
-  const sel = document.querySelector(`#${modalId} #g-atanan`);
-  if (!sel) return;
-  const personel = DB.get().personel.filter(p => p.durum === 'aktif');
-  sel.innerHTML = '<option value="">— Atanmadı —</option>' +
-    personel.map(p => `<option value="${escHtml(p.id)}">${escHtml(p.ad)}</option>`).join('');
+// ════════════════════════════════════════════
+//   YARDIMCI FONKSİYONLAR
+// ════════════════════════════════════════════
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
-/* ═══════════════════════════
-   UI: Sidebar & Navigation
-   ═══════════════════════════ */
-function sidebarToggle() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('open');
+function tarihFormatla(t) {
+  if (!t) return '—';
+  try { return new Date(t).toLocaleDateString('tr-TR'); } catch { return '—'; }
 }
 
-function sidebarKapat() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('open');
+function bugunTarih() {
+  return new Date().toISOString().slice(0, 10);
 }
 
-const SAYFALARBaşlık = {
-  panel: 'Ana Panel',
-  santiyeler: 'Şantiyeler',
-  personel: 'Personel',
-  yoklama: 'Günlük Yoklama',
-  gorevler: 'Görev Yönetimi',
-  'gunluk-rapor': 'Günlük Rapor',
-  malzeme: 'Malzeme & Stok',
-  fotograflar: 'Saha Fotoğrafları',
-  raporlar: 'Raporlar',
-  maliyet: 'Maliyet Takibi',
-  siparisler: 'Sipariş Takibi',
-  ayarlar: 'Ayarlar'
-};
-
-function sayfaGit(sayfa) {
-  // Hide all pages
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  // Show target page
-  const el = document.getElementById(`page-${sayfa}`);
-  if (el) el.classList.add('active');
-
-  // Activate nav item
-  const navItem = document.querySelector(`[data-page="${sayfa}"]`);
-  if (navItem) navItem.classList.add('active');
-
-  // Update topbar title
-  document.getElementById('topbar-title').textContent = SAYFALARBaşlık[sayfa] || sayfa;
-
-  // Close sidebar on mobile
-  if (window.innerWidth < 768) sidebarKapat();
-
-  // Load page data
-  const loaders = {
-    panel:          panelYukle,
-    santiyeler:     santiyeleriGoster,
-    personel:       personelGoster,
-    yoklama:        yoklamaHazirla,
-    gorevler:       gorevleriGoster,
-    'gunluk-rapor': gunlukRaporHazirla,
-    malzeme:        malzemeGoster,
-    fotograflar:    fotograflariGoster,
-    raporlar:       raporlarYukle,
-    maliyet:        maliyetGoster,
-    siparisler:     siparisleriGoster,
-    ayarlar:        ayarlariYukle
-  };
-
-  loaders[sayfa]?.();
+function toast(mesaj, renk) {
+  const kap = document.getElementById('toast-kap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  if (renk) el.style.borderLeftColor = renk;
+  el.textContent = mesaj;
+  kap.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 }
 
-/* ═══════════════════════════
-   UI: Dark Mode
-   ═══════════════════════════ */
-function darkModeToggle() {
-  const current = document.documentElement.getAttribute('data-theme');
-  temaDegistir(current === 'dark' ? 'light' : 'dark');
+// ════════════════════════════════════════════
+//   PIN SİSTEMİ — TAM ÇALIŞIR
+// ════════════════════════════════════════════
+let _pinGirilen = '';
+const PIN_LEN = 4;
+
+function pinTus(rakam) {
+  if (_pinGirilen.length >= PIN_LEN) return;
+  _pinGirilen += String(rakam);
+  _pinNoktaGuncelle();
+  if (_pinGirilen.length === PIN_LEN) {
+    setTimeout(_pinKontrol, 150);
+  }
 }
 
-function temaDegistir(tema) {
-  document.documentElement.setAttribute('data-theme', tema);
-  document.getElementById('dark-btn').textContent = tema === 'dark' ? '☀️' : '🌙';
-  const db = DB.get();
-  db.ayarlar.tema = tema;
-  DB.save();
+function pinSil() {
+  _pinGirilen = _pinGirilen.slice(0, -1);
+  _pinNoktaGuncelle();
+  document.getElementById('pin-hata-mesaj').textContent = '';
 }
 
-/* ═══════════════════════════
-   UI: Bildirim Paneli
-   ═══════════════════════════ */
-function notifPanelToggle() {
-  const panel = document.getElementById('notif-panel');
-  panel.classList.toggle('open');
+function pinTemizle() {
+  _pinGirilen = '';
+  _pinNoktaGuncelle();
+  document.getElementById('pin-hata-mesaj').textContent = '';
+}
+
+function _pinNoktaGuncelle() {
+  for (let i = 0; i < PIN_LEN; i++) {
+    const dot = document.getElementById('pn' + i);
+    if (!dot) continue;
+    dot.classList.remove('dolu', 'hata');
+    if (i < _pinGirilen.length) dot.classList.add('dolu');
+  }
+}
+
+async function _pinKontrol() {
+  // Önce local deneme — admin / 1234
+  const localKullanicilar = [
+    { kullanici: 'admin', pin: '1234', isim: 'Yönetici', rol: 'admin' }
+  ];
+
+  // Firebase kullanıcılarını da dene
+  let liste = [...localKullanicilar];
+  try {
+    const snap = await Promise.race([
+      USERS_REF.get(),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 3000))
+    ]);
+    if (snap.exists && snap.data().liste) {
+      liste = [...snap.data().liste, ...localKullanicilar];
+    }
+  } catch(e) {
+    // Firebase yok, local ile devam
+  }
+
+  const bulunan = liste.find(u => u.pin === _pinGirilen);
+
+  if (bulunan) {
+    aktifKullanici = bulunan;
+    sessionStorage.setItem('aktifKullanici', JSON.stringify(aktifKullanici));
+    girisBasarili();
+  } else {
+    _pinHatali();
+  }
+}
+
+function _pinHatali() {
+  const hataMesaj = document.getElementById('pin-hata-mesaj');
+  hataMesaj.textContent = '❌ Hatalı PIN. Tekrar deneyin.';
+
+  for (let i = 0; i < PIN_LEN; i++) {
+    const dot = document.getElementById('pn' + i);
+    if (dot) { dot.classList.remove('dolu'); dot.classList.add('hata'); }
+  }
+
+  const kutu = document.querySelector('.giris-kutu');
+  if (kutu) {
+    kutu.style.animation = 'none';
+    setTimeout(() => {
+      kutu.style.animation = 'pinSallan 0.4s ease';
+    }, 10);
+  }
+
+  setTimeout(() => {
+    pinTemizle();
+    for (let i = 0; i < PIN_LEN; i++) {
+      const dot = document.getElementById('pn' + i);
+      if (dot) dot.classList.remove('hata');
+    }
+  }, 700);
+}
+
+// Klavye desteği
+document.addEventListener('keydown', function(e) {
+  const loginGorunur = document.getElementById('giris-ekrani').style.display !== 'none';
+  if (!loginGorunur) return;
+  if (e.key >= '0' && e.key <= '9') pinTus(e.key);
+  else if (e.key === 'Backspace') pinSil();
+  else if (e.key === 'Escape') pinTemizle();
+});
+
+function girisBasarili() {
+  document.getElementById('giris-ekrani').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'flex';
+  const bas = (aktifKullanici.isim || 'Y').charAt(0).toUpperCase();
+  const renk = aktifKullanici.rol === 'admin' ? '#92400e' : '#1e40af';
+  const avatarEl = document.getElementById('sidebar-avatar');
+  avatarEl.textContent = bas;
+  avatarEl.style.background = renk;
+  document.getElementById('sidebar-isim').textContent = aktifKullanici.isim || aktifKullanici.kullanici;
+  document.getElementById('sidebar-rol').textContent = aktifKullanici.rol || 'kullanıcı';
+  yukle();
+}
+
+function cikisYap() {
+  aktifKullanici = null;
+  sessionStorage.removeItem('aktifKullanici');
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('giris-ekrani').style.display = 'flex';
+  pinTemizle();
+}
+
+// ════════════════════════════════════════════
+//   MODAL
+// ════════════════════════════════════════════
+function modalAc(id) {
+  document.getElementById(id).classList.add('acik');
+  if (id === 'modal-gorev') santiyeSecListesiniDoldur('g-santiye');
+  if (id === 'modal-takim') santiyeSecListesiniDoldur('t-santiye');
+  if (id === 'modal-maliyet') { santiyeSecListesiniDoldur('mal-santiye'); malTurSec(document.getElementById('mal-tur').value ||
