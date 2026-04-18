@@ -1,150 +1,24 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Şantiye Pro | Paprika Yönetim</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .sidebar-item:hover { background: rgba(255,255,255,0.1); }
-        .active-tab { background: #2563eb !important; color: white !important; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Şantiye Pro Offline Final</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{--bg:#f5f7fb;--surface:#fff;--surface-2:#eef3f9;--border:rgba(15,23,42,.1);--text:#0f172a;--muted:#64748b;--primary:#0f766e;--primary-hover:#115e59;--success:#15803d;--warning:#b45309;--danger:#b91c1c;--info:#1d4ed8;--shadow-sm:0 1px 2px rgba(15,23,42,.05);--shadow-md:0 12px 30px rgba(15,23,42,.08);--radius-md:16px;--sidebar-w:280px;--topbar-h:84px}
+    [data-theme="dark"]{--bg:#09111f;--surface:#121c2f;--surface-2:#182438;--border:rgba(255,255,255,.08);--text:#e5edf7;--muted:#9fb0c5;--primary:#22c55e;--primary-hover:#16a34a;--success:#4ade80;--warning:#f59e0b;--danger:#f87171;--info:#60a5fa;--shadow-sm:0 1px 2px rgba(0,0,0,.25);--shadow-md:0 12px 32px rgba(0,0,0,.35)}
+    *{box-sizing:border-box}html{font-family:Inter,system-ui,sans-serif;color-scheme:light dark}body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;line-height:1.5}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}img{display:block;max-width:100%}.skip-link{position:absolute;left:-9999px;top:12px;z-index:9999;background:var(--surface);padding:10px 14px;border-radius:12px;border:1px solid var(--border)}.skip-link:focus{left:12px}.app{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:20px}.brand{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--border)}.brand__logo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),#0b4e49);color:#fff;font-weight:800;box-shadow:var(--shadow-md)}.brand small{display:block;color:var(--muted)}.nav{display:grid;gap:8px;overflow:auto}.nav__item,.mobile-nav__item{min-height:46px;padding:12px 14px;border-radius:14px;border:1px solid transparent;background:transparent;color:var(--text);text-align:left;display:flex;align-items:center;gap:10px;font-weight:600}.nav__item:hover,.mobile-nav__item:hover,.nav__item.is-active,.mobile-nav__item.is-active{background:var(--surface-2);border-color:var(--border)}.shell{min-width:0}.topbar{position:sticky;top:0;z-index:30;min-height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px)}.topbar h1{margin:0 0 4px;font-size:clamp(1.4rem,1.1rem + 1vw,2rem)}.topbar p{margin:0;color:var(--muted)}.topbar__actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.main{padding:24px}.view{display:none}.view.is-active{display:block}.stats-grid,.content-grid,.list-grid,.photo-grid,.kanban{display:grid;gap:16px}.stats-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.content-grid{grid-template-columns:1.2fr .8fr}.list-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.photo-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}.kanban{grid-template-columns:repeat(3,minmax(0,1fr))}.card,.stat-card,.project-card,.report-card,.task-card,.inventory-card,.photo-card,.notice-card,.table-card,.kanban__column{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-sm)}.card,.table-card,.kanban__column,.project-card,.report-card,.task-card,.inventory-card,.notice-card,.photo-card{padding:18px}.stat-card{padding:18px;display:grid;gap:8px}.stat-card__value{font-size:1.8rem;font-weight:800}.stat-card__label{color:var(--muted)}.section-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.btn{min-height:44px;border-radius:12px;padding:10px 16px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:600}.btn:hover{background:var(--surface-2)}.btn--primary{background:var(--primary);color:#fff;border-color:transparent}.btn--primary:hover{background:var(--primary-hover)}.btn--ghost{background:transparent}.btn--danger{background:color-mix(in srgb,var(--danger) 12%,var(--surface));color:var(--danger)}.form-grid{display:grid;gap:14px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-group{display:grid;gap:8px}.form-group label{font-size:.92rem;font-weight:600}.form-group input,.form-group textarea,.form-group select{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:12px 14px}.form-group textarea{min-height:110px;resize:vertical}.status{display:inline-flex;align-items:center;min-height:28px;padding:4px 10px;border-radius:999px;font-size:.84rem;font-weight:700}.status--success{background:color-mix(in srgb,var(--success) 14%,transparent);color:var(--success)}.status--warning{background:color-mix(in srgb,var(--warning) 14%,transparent);color:var(--warning)}.status--danger{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger)}.status--info{background:color-mix(in srgb,var(--info) 14%,transparent);color:var(--info)}.meta{color:var(--muted);font-size:.92rem}.stack{display:grid;gap:12px}.row-between{display:flex;justify-content:space-between;gap:12px;align-items:start}.empty-state{text-align:center;padding:32px 18px;color:var(--muted);background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-md)}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}.table th{color:var(--muted);font-size:.9rem}.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.58);display:grid;place-items:center;padding:16px;z-index:999}.modal{width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-md)}.modal__header,.modal__body,.modal__footer{padding:18px}.modal__footer{border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--surface)}.toast-stack{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:1200}.toast{min-width:260px;max-width:360px;background:var(--surface);border:1px solid var(--border);padding:12px 14px;border-radius:14px;box-shadow:var(--shadow-md)}.mobile-nav{display:none}.photo-card img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;margin-bottom:10px;background:var(--surface-2)}.priority-dot{width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:8px;transform:translateY(1px)}@media (max-width:1180px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.list-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr}.kanban{grid-template-columns:1fr}}@media (max-width:820px){.app{grid-template-columns:1fr}.sidebar{display:none}.main,.topbar{padding:16px}.stats-grid,.list-grid,.form-row{grid-template-columns:1fr}.mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;position:sticky;bottom:0;padding:10px;border-top:1px solid var(--border);background:var(--surface);z-index:50}body{padding-bottom:78px}.topbar{align-items:start;flex-direction:column}.topbar__actions{width:100%}}</style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-
-<div class="flex min-h-screen">
-    <aside class="w-64 bg-slate-900 text-white p-6 hidden md:flex flex-col">
-        <div class="mb-10">
-            <h1 class="text-2xl font-bold tracking-tight text-blue-400">ŞANTİYE<span class="text-white">PRO</span></h1>
-            <p class="text-xs text-slate-400">Paprika İnşaat & Yönetim</p>
-        </div>
-        <nav class="space-y-2 flex-1">
-            <button onclick="window.tabDegistir('dashboard')" id="btn-dashboard" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-xl transition-all">
-                <i data-lucide="layout-dashboard"></i> Panel
-            </button>
-            <button onclick="window.tabDegistir('personel')" id="btn-personel" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400">
-                <i data-lucide="users"></i> Personel Takip
-            </button>
-            <button onclick="window.tabDegistir('stok')" id="btn-stok" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400">
-                <i data-lucide="package"></i> Malzeme / Stok
-            </button>
-        </nav>
-        <div class="pt-6 border-t border-slate-800">
-            <div class="flex items-center gap-3 p-2">
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">Yİ</div>
-                <div>
-                    <p class="text-sm font-medium">Yakup İlhan</p>
-                    <p class="text-[10px] text-slate-400">Yönetici</p>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main class="flex-1 p-4 md:p-10 overflow-y-auto">
-        <div id="tab-dashboard">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div class="text-blue-600 mb-4"><i data-lucide="user-plus"></i></div>
-                    <p class="text-slate-500 text-sm font-medium">Aktif Personel</p>
-                    <h2 class="text-3xl font-bold mt-1" id="dash-personel-sayi">0</h2>
-                </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div class="text-orange-600 mb-4"><i data-lucide="hard-hat"></i></div>
-                    <p class="text-slate-500 text-sm font-medium">Bekleyen İşler</p>
-                    <h2 class="text-3xl font-bold mt-1" id="dash-is-sayi">0</h2>
-                </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div class="text-green-600 mb-4"><i data-lucide="trending-up"></i></div>
-                    <p class="text-slate-500 text-sm font-medium">Tamamlanma Oranı</p>
-                    <h2 class="text-3xl font-bold mt-1">%0</h2>
-                </div>
-            </div>
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                <h3 class="font-bold text-lg mb-4">Son Sistem Mesajları</h3>
-                <div id="liste-ozet" class="space-y-4">
-                    <p id="firebase-durum" class="text-slate-400 italic">Veritabanı bağlantısı kontrol ediliyor...</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-personel" class="hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Personel Listesi</h2>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">+ Yeni Ekle</button>
-            </div>
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                <p class="text-slate-400">Personel verileri buraya eklenecek.</p>
-            </div>
-        </div>
-
-        <div id="tab-stok" class="hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Malzeme ve Stok</h2>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">+ Malzeme Girişi</button>
-            </div>
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                <p class="text-slate-400">Şantiye malzeme stok verileri buraya eklenecek.</p>
-            </div>
-        </div>
-    </main>
-</div>
-
-<script type="module">
-    // 1. Firebase Modüllerini Doğrudan CDN üzerinden çekiyoruz
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // 2. Senin Firebase Konfigürasyonun
-    const firebaseConfig = {
-        apiKey: "AIzaSyBSWVa-2k0HBFMcPd0kY2BVOTE-a2dzceQ",
-        authDomain: "santiye-pro2.firebaseapp.com",
-        projectId: "santiye-pro2",
-        storageBucket: "santiye-pro2.firebasestorage.app",
-        messagingSenderId: "457951728627",
-        appId: "1:457951728627:web:9b2fccd9d8cc9621953886"
-    };
-
-    // 3. Firebase'i Başlat
-    try {
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        // Ekrana başarı mesajı yazdıralım
-        document.getElementById('firebase-durum').innerHTML = 
-            '<span class="text-green-600 font-medium">✅ Firebase veritabanına başarıyla bağlanıldı. Sistem aktif.</span>';
-        console.log("Firebase başlatıldı! Veritabanı bağlantısı başarılı.");
-    } catch (error) {
-        document.getElementById('firebase-durum').innerHTML = 
-            '<span class="text-red-600 font-medium">❌ Firebase bağlantı hatası: ' + error.message + '</span>';
-        console.error("Firebase Hatası: ", error);
-    }
-
-    // 4. TAB YÖNETİMİ (Modül içinde olduğu için window objesine bağlıyoruz)
-    window.tabDegistir = function(tabAdi) {
-        // Tüm tabları gizle
-        document.getElementById('tab-dashboard').classList.add('hidden');
-        document.getElementById('tab-personel').classList.add('hidden');
-        document.getElementById('tab-stok').classList.add('hidden');
-        
-        // Menü butonlarındaki aktif durumunu temizle
-        document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active-tab'));
-        
-        // Seçileni göster ve menüyü aktif yap
-        document.getElementById('tab-' + tabAdi).classList.remove('hidden');
-        document.getElementById('btn-' + tabAdi).classList.add('active-tab');
-        
-        // İkonları yeniden render et (gizli div'den çıkınca ikonların görünmesi için)
-        lucide.createIcons();
-    }
-
-    // İlk açılış işlemleri
-    window.onload = () => {
-        lucide.createIcons();
-        window.tabDegistir('dashboard');
-    };
-</script>
-</body>
-</html>
+<body>
+<a href="#main" class="skip-link">İçeriğe geç</a>
+<div class="app">
+<aside class="sidebar"><div class="brand"><div class="brand__logo">ŞP</div><div><strong>Şantiye Pro</strong><small>Offline + Akıllı Yedek</small></div></div><nav class="nav"><button class="nav__item is-active" data-route="dashboard">Dashboard</button><button class="nav__item" data-route="dailyReports">Günlük Rapor</button><button class="nav__item" data-route="tasks">Görev Yönetimi</button><button class="nav__item" data-route="personnel">Personel</button><button class="nav__item" data-route="inventory">Stok</button><button class="nav__item" data-route="photos">Fotoğraflar</button><button class="nav__item" data-route="notifications">Bildirimler</button><button class="nav__item" data-route="projects">Şantiyeler</button></nav></aside>
+<div class="shell"><header class="topbar"><div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Offline çalışan, IndexedDB tabanlı ve JSON yedekli şantiye paneli.</p></div><div class="topbar__actions"><button class="btn btn--ghost" id="themeToggle">🌙</button><button class="btn" id="backupBtn">Yedek Al</button><button class="btn" id="restoreBtn">Yedek Yükle</button><button class="btn" id="resetBtn">Yerel Sıfırla</button><input id="restoreInput" type="file" accept="application/json" hidden><button class="btn btn--primary" data-action="open-modal" data-modal="quickAddModal">+ Hızlı Ekle</button></div></header>
+<main class="main" id="main"><section class="view is-active" data-view="dashboard"><div id="statsGrid" class="stats-grid"></div><div class="content-grid"><section class="card stack" id="todayOverview"></section><section class="card stack" id="recentActivities"></section></div></section><section class="view" data-view="dailyReports"><div class="section-head"><h2>Günlük Raporlar</h2><button class="btn btn--primary" data-action="open-modal" data-modal="reportModal">Rapor Ekle</button></div><div id="dailyReportsList" class="list-grid"></div></section><section class="view" data-view="tasks"><div class="section-head"><h2>Görev Yönetimi</h2><button class="btn btn--primary" data-action="open-modal" data-modal="taskModal">Görev Ekle</button></div><div id="taskBoard" class="kanban"></div></section><section class="view" data-view="personnel"><div class="section-head"><h2>Personel Takibi</h2><button class="btn btn--primary" data-action="open-modal" data-modal="personModal">Personel Ekle</button></div><div id="personnelList" class="table-card"></div></section><section class="view" data-view="inventory"><div class="section-head"><h2>Malzeme / Stok</h2><button class="btn btn--primary" data-action="open-modal" data-modal="stockModal">Stok Hareketi</button></div><div id="inventoryList" class="list-grid"></div></section><section class="view" data-view="photos"><div class="section-head"><h2>Fotoğraf Arşivi</h2><button class="btn btn--primary" data-action="open-modal" data-modal="photoModal">Fotoğraf Ekle</button></div><div id="photoGallery" class="photo-grid"></div></section><section class="view" data-view="notifications"><div class="section-head"><h2>Bildirim Merkezi</h2></div><div id="notificationList" class="list-grid"></div></section><section class="view" data-view="projects"><div class="section-head"><h2>Şantiyeler</h2><button class="btn btn--primary" data-action="open-modal" data-modal="projectModal">Şantiye Ekle</button></div><div id="projectGrid" class="list-grid"></div></section></main></div></div>
+<nav class="mobile-nav"><button class="mobile-nav__item is-active" data-route="dashboard">Ana</button><button class="mobile-nav__item" data-route="tasks">Görev</button><button class="mobile-nav__item" data-route="personnel">Ekip</button><button class="mobile-nav__item" data-route="inventory">Stok</button><button class="mobile-nav__item" data-route="projects">Şantiye</button></nav>
+<div id="modalRoot" hidden></div><div id="toastStack" class="toast-stack"></div>
+<script>
+(()=>{const DB_NAME='santiye-pro-offline-db',STORE_NAME='app',STORE_KEY='state',BACKUP_STORE='backups',MAX_AUTO_BACKUPS=7;const state={route:'dashboard',theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',ui:{modal:null},data:{projects:[],dailyReports:[],tasks:[],personnel:[],inventory:[],photos:[],notifications:[]}};const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];const routes={dashboard:['Dashboard','Offline çalışan, IndexedDB tabanlı ve JSON yedekli şantiye paneli.'],dailyReports:['Günlük Rapor','İlerleme, risk ve saha notlarını kaydedin.'],tasks:['Görev Yönetimi','Bekleyen, devam eden ve tamamlanan işleri izleyin.'],personnel:['Personel Takibi','Ekip, rol ve saha dağılımını yönetin.'],inventory:['Stok Sistemi','Malzeme giriş-çıkış ve kritik stokları takip edin.'],photos:['Fotoğraf Arşivi','Sahadan görsel kayıt toplayın.'],notifications:['Bildirim Merkezi','Önemli olayları ve aksiyonları kaçırmayın.'],projects:['Şantiyeler','Aktif ve planlanan şantiye kayıtlarını yönetin.']};function openDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,2);req.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE_NAME))db.createObjectStore(STORE_NAME);if(!db.objectStoreNames.contains(BACKUP_STORE))db.createObjectStore(BACKUP_STORE,{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}async function saveState(){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE_NAME,'readwrite');tx.objectStore(STORE_NAME).put(JSON.parse(JSON.stringify(state.data)),STORE_KEY);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}async function loadState(){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE_NAME,'readonly');const req=tx.objectStore(STORE_NAME).get(STORE_KEY);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)})}async function createAutoBackup(reason='autosave'){const db=await openDb();const payload={id:Date.now(),reason,createdAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(state.data))};return new Promise((resolve,reject)=>{const tx=db.transaction(BACKUP_STORE,'readwrite');const store=tx.objectStore(BACKUP_STORE);store.put(payload);const allReq=store.getAll();allReq.onsuccess=()=>{const items=(allReq.result||[]).sort((a,b)=>b.id-a.id);items.slice(MAX_AUTO_BACKUPS).forEach(item=>store.delete(item.id))};tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}async function loadBackups(){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(BACKUP_STORE,'readonly');const req=tx.objectStore(BACKUP_STORE).getAll();req.onsuccess=()=>resolve((req.result||[]).sort((a,b)=>b.id-a.id));req.onerror=()=>reject(req.error)})}async function resetLocalData(){const ok=confirm('Yerel veriler silinsin mi? Önce yedek alman önerilir.');if(!ok)return;state.data={projects:[],dailyReports:[],tasks:[],personnel:[],inventory:[],photos:[],notifications:[]};seedDemoData();await persist('manual-reset');render();toast('Yerel veriler sıfırlandı.')}function escapeHtml(v=''){return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}function sanitizeText(v,m=250){return String(v||'').replace(/\s+/g,' ').trim().slice(0,m)}function sanitizeNumber(v,min=0,max=999999999,f=0){const n=Number(v);if(!Number.isFinite(n))return f;return Math.max(min,Math.min(max,n))}function uid(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`}function today(){return new Date().toISOString().slice(0,10)}function projectNameById(id){return state.data.projects.find(p=>p.id===id)?.name||'Şantiye seçilmedi'}function projectOptions(){if(!state.data.projects.length)return '<option value="">Şantiye yok</option>';return state.data.projects.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('')}function setTheme(theme){state.theme=theme;document.documentElement.setAttribute('data-theme',theme);$('#themeToggle').textContent=theme==='dark'?'☀️':'🌙'}function toast(message){const el=document.createElement('div');el.className='toast';el.textContent=message;$('#toastStack').appendChild(el);setTimeout(()=>el.remove(),3200)}function setRoute(route){state.route=route;$$('[data-route]').forEach(btn=>btn.classList.toggle('is-active',btn.dataset.route===route));$$('.view').forEach(view=>view.classList.toggle('is-active',view.dataset.view===route));$('#pageTitle').textContent=routes[route]?.[0]||'Şantiye Pro';$('#pageSubtitle').textContent=routes[route]?.[1]||'';render()}function openModal(name){state.ui.modal=name;const root=$('#modalRoot');root.hidden=false;root.className='modal-backdrop';root.innerHTML=modalMarkup(name);const firstEl=root.querySelector('input,select,textarea,button');if(firstEl)firstEl.focus()}function closeModal(){state.ui.modal=null;const root=$('#modalRoot');root.hidden=true;root.className='';root.innerHTML=''}function modalMarkup(name){const map={quickAddModal:{title:'Hızlı Ekle',body:`<div class="form-grid"><button class="btn btn--primary" data-action="open-modal" data-modal="projectModal" type="button">Yeni Şantiye</button><button class="btn btn--primary" data-action="open-modal" data-modal="taskModal" type="button">Yeni Görev</button><button class="btn btn--primary" data-action="open-modal" data-modal="reportModal" type="button">Günlük Rapor</button><button class="btn btn--primary" data-action="open-modal" data-modal="stockModal" type="button">Stok Hareketi</button></div>`},projectModal:{title:'Şantiye Ekle',body:projectForm()},taskModal:{title:'Görev Ekle',body:taskForm()},reportModal:{title:'Günlük Rapor Ekle',body:reportForm()},personModal:{title:'Personel Ekle',body:personForm()},stockModal:{title:'Stok Hareketi Ekle',body:stockForm()},photoModal:{title:'Fotoğraf Ekle',body:photoForm()}};const current=map[name];if(!current)return '';return `<div class="modal" role="dialog" aria-modal="true"><div class="modal__header row-between"><h3 style="margin:0;">${escapeHtml(current.title)}</h3><button class="btn btn--ghost" data-action="close-modal" type="button">Kapat</button></div><div class="modal__body">${current.body}</div></div>`}function projectForm(){return `<form class="form-grid" data-form="project"><div class="form-row"><div class="form-group"><label>Şantiye adı</label><input name="name" maxlength="120" required></div><div class="form-group"><label>Konum</label><input name="location" maxlength="120"></div></div><div class="form-row"><div class="form-group"><label>Başlangıç</label><input name="startDate" type="date"></div><div class="form-group"><label>Tahmini bitiş</label><input name="endDate" type="date"></div></div><div class="form-group"><label>Açıklama</label><textarea name="description" maxlength="500"></textarea></div><div class="modal__footer"><button class="btn btn--ghost" data-action="close-modal" type="button">İptal</button><button class="btn btn--primary" type="submit">Kaydet</button></div></form>`}function taskForm(){return `<form class="form-grid" data-form="task"><div class="form-group"><label>Görev başlığı</label><input name="title" maxlength="120" required></div><div class="form-row"><div class="form-group"><label>Şantiye</label><select name="projectId">${projectOptions()}</select></div><div class="form-group"><label>Öncelik</label><select name="priority"><option value="high">Yüksek</option><option value="medium" selected>Orta</option><option value="low">Düşük</option></select></div></div><div class="form-row"><div class="form-group"><label>Termin</label><input name="dueDate" type="date"></div><div class="form-group"><label>Sorumlu</label><input name="assignee" maxlength="80"></div></div><div class="form-group"><label>Açıklama</label><textarea name="description" maxlength="500"></textarea></div><div class="modal__footer"><button class="btn btn--ghost" data-action="close-modal" type="button">İptal</button><button class="btn btn--primary" type="submit">Kaydet</button></div></form>`}function reportForm(){return `<form class="form-grid" data-form="report"><div class="form-row"><div class="form-group"><label>Şantiye</label><select name="projectId">${projectOptions()}</select></div><div class="form-group"><label>Tarih</label><input name="date" type="date" value="${today()}" required></div></div><div class="form-group"><label>Gün özeti</label><textarea name="summary" maxlength="700" required></textarea></div><div class="form-group"><label>Risk / sorunlar</label><textarea name="issues" maxlength="500"></textarea></div><div class="form-group"><label>Sahadaki personel sayısı</label><input name="staffCount" type="number" min="0" step="1"></div><div class="modal__footer"><button class="btn btn--ghost" data-action="close-modal" type="button">İptal</button><button class="btn btn--primary" type="submit">Kaydet</button></div></form>`}function personForm(){return `<form class="form-grid" data-form="person"><div class="form-row"><div class="form-group"><label>Ad Soyad</label><input name="name" maxlength="120" required></div><div class="form-group"><label>Görev / Meslek</label><input name="role" maxlength="80" required></div></div><div class="form-row"><div class="form-group"><label>Şantiye</label><select name="projectId">${projectOptions()}</select></div><div class="form-group"><label>Telefon</label><input name="phone" inputmode="tel" maxlength="20"></div></div><div class="modal__footer"><button class="btn btn--ghost" data-action="close-modal" type="button">İptal</button><button class="btn btn--primary" type="submit">Kaydet</button></div></form>`}function stockForm(){return `<form class="form-grid" data-form="stock"><div class="form-row"><div class="form-group"><label>Malzeme adı</label><input name="name" maxlength="120" required></div><div class="form-group"><label>Şantiye</label><select name="projectId">${projectOptions()}</select></div></div><div class="form-row"><div class="form-group"><label>Hareket türü</label><select name="type"><option value="in">Giriş</option><option value="out">Çıkış</option></select></div><div class="form-group"><label>Miktar</label><input name="quantity" type="number" min="0" step="0.01" required></div></div><div class="form-row"><div class="form-group"><label>Birim</label><input name="unit" maxlength="20"></div><div class="form-group"><label>Kritik eşik</label><input name="threshold" type="number" min="0" step="0.01"></div></div><div class="modal__footer"><button class="btn btn--ghost" data-action="close-modal" type="button">İptal</button><button class="btn btn--primary" type="submit">Kaydet</button></div></form>`}function photoForm(){return `<form class="form-grid" data-form="photo"><div class="form-row"><div class="form-group"><label>Şantiye</label><select name="projectId">${projectOptions()}</select></div><div class="form-group"><label>Başlık</label><input name="title" maxlength="120" required></div></div><div class="form-group"><label>Fotoğraf URL</label><input name="url" type="url" placeholder="https://..." required></div><div class="modal__footer"><button class="btn btn--ghost" data-action="close-modal" type="button">İptal</button><button class="btn btn--primary" type="submit">Kaydet</button></div></form>`}function getStats(){const openTasks=state.data.tasks.filter(t=>t.status!=='done').length;const staffToday=state.data.dailyReports.filter(r=>r.date===today()).reduce((sum,item)=>sum+(Number(item.staffCount)||0),0);const criticalStock=state.data.inventory.filter(i=>i.threshold>0&&i.type==='out'&&i.quantity>=i.threshold).length;const unread=state.data.notifications.filter(n=>!n.read).length;return[{label:'Toplam Şantiye',value:state.data.projects.length},{label:'Açık Görev',value:openTasks},{label:'Bugün Saha',value:staffToday},{label:'Bildirim',value:unread+criticalStock}]}function renderStats(){$('#statsGrid').innerHTML=getStats().map(item=>`<article class="stat-card"><div class="stat-card__value">${escapeHtml(String(item.value))}</div><div class="stat-card__label">${escapeHtml(item.label)}</div></article>`).join('')}async function renderDashboard(){const recentReports=[...state.data.dailyReports].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,5);const recentNotifications=[...state.data.notifications].slice(0,6);$('#todayOverview').innerHTML=`<div class="row-between"><h2 style="margin:0;">Bugün Özeti</h2><span class="meta">${escapeHtml(today())}</span></div><div class="stack">${recentReports.length?recentReports.map(item=>`<article class="report-card"><div class="row-between"><strong>${escapeHtml(projectNameById(item.projectId))}</strong><span class="meta">${escapeHtml(item.date)}</span></div><p>${escapeHtml(item.summary)}</p>${item.issues?`<div class="status status--warning">Risk notu var</div>`:''}</article>`).join(''):'<div class="empty-state">Henüz günlük rapor eklenmedi.</div>'}</div>`;loadBackups().then(backups=>{const latest=backups[0];$('#recentActivities').innerHTML=`<div class="row-between"><h2 style="margin:0;">Son Bildirimler</h2><span class="meta">${latest?`Son yedek: ${escapeHtml((latest.createdAt||'').slice(0,16).replace('T',' '))}`:'Yerel kayıt'}</span></div><div class="stack">${recentNotifications.length?recentNotifications.map(item=>`<article class="notice-card"><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.message)}</p></article>`).join(''):'<div class="empty-state">Henüz bildirim bulunmuyor.</div>'}<article class="notice-card"><strong>Otomatik yedekleme</strong><p>Son 7 otomatik kayıt tarayıcı içinde saklanır. Manuel JSON yedeği için üstteki Yedek Al butonunu kullan.</p></article></div>`})}
