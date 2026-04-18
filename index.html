@@ -6528,6 +6528,340 @@ window.addEventListener('load',()=>{
     <button class="btn btn-primary btn-block" onclick="mesaiKaydet()">💾 Kaydet</button>
   </div>
 </div>
+  // ═══════════════════════════════════════
+// T3 — YENİ TASARIM SİSTEMİ JS
+// ═══════════════════════════════════════
+
+// ── SAYFA GEÇİŞ SİSTEMİ ──────────────
+const SP_SAYFA_BASLIKLAR = {
+  'panel':'Panel','santiyeler':'Şantiyeler',
+  'personeller':'Personeller','yoklama':'Yoklama',
+  'gorevler':'Görevler','ilerleme':'İlerleme',
+  'takimlar':'Takımlar','malzemeler':'Stok & Malzeme',
+  'siparisler':'Siparişler','maliyetler':'Maliyetler',
+  'fotograflar':'Fotoğraflar','gunluk-rapor':'Günlük Rapor',
+  'dokumanlar':'Dokümanlar','ayarlar':'Ayarlar',
+  'ic-talep':'İç Talep','hakedis':'Hakediş & Fatura',
+  'butce':'Bütçe Takibi','bordro':'Maaş Bordrosu',
+  'mesai':'Mesai Takibi','ozluk':'Personel Özlük',
+  'gelismis-rapor':'Gelişmiş Raporlar',
+  'kamera':'Kamera & Annotasyon','supabase':'Bulut Sync'
+};
+
+// Mevcut sayfaGit fonksiyonunu güncelle
+const _spSayfaGitEski = sayfaGit;
+sayfaGit = function(id) {
+  _spSayfaGitEski(id);
+  spSayfaGitSonrasi(id);
+};
+
+function spSayfaGitSonrasi(id) {
+  // Topbar başlık güncelle
+  const baslikEl = document.getElementById('sp-topbar-baslik');
+  if(baslikEl) baslikEl.textContent = SP_SAYFA_BASLIKLAR[id]||id;
+
+  // Sidebar aktif butonu güncelle
+  document.querySelectorAll('.sp-nav-btn').forEach(btn => {
+    btn.classList.toggle('aktif', btn.dataset.sayfa === id);
+  });
+
+  // Bottom nav aktif güncelle
+  document.querySelectorAll('.sp-bottom-btn').forEach(btn => {
+    btn.classList.toggle('aktif', btn.dataset.bn === id);
+  });
+
+  // Mobilde sidebar'ı kapat
+  if(window.innerWidth <= 768) sidebarKapat();
+
+  // Aktif sayfayı kaydet
+  window._aktifSayfa = id;
+
+  // Scroll en üste
+  const content = document.getElementById('sp-content');
+  if(content) content.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── SİDEBAR KONTROL ───────────────────
+function sidebarAc() {
+  const sidebar = document.getElementById('sp-sidebar');
+  const overlay = document.getElementById('sp-overlay');
+  const hamburger = document.getElementById('sp-hamburger');
+  if(sidebar) sidebar.classList.add('acik');
+  if(overlay) overlay.classList.add('acik');
+  if(hamburger) {
+    hamburger.querySelectorAll('span')[0].style.transform = 'rotate(45deg) translate(5px,5px)';
+    hamburger.querySelectorAll('span')[1].style.opacity = '0';
+    hamburger.querySelectorAll('span')[2].style.transform = 'rotate(-45deg) translate(5px,-5px)';
+  }
+  document.body.style.overflow = 'hidden';
+}
+
+function sidebarKapat() {
+  const sidebar = document.getElementById('sp-sidebar');
+  const overlay = document.getElementById('sp-overlay');
+  const hamburger = document.getElementById('sp-hamburger');
+  if(sidebar) sidebar.classList.remove('acik');
+  if(overlay) overlay.classList.remove('acik');
+  if(hamburger) {
+    hamburger.querySelectorAll('span')[0].style.transform = '';
+    hamburger.querySelectorAll('span')[1].style.opacity = '';
+    hamburger.querySelectorAll('span')[2].style.transform = '';
+  }
+  document.body.style.overflow = '';
+}
+
+// ── TOAST GÜNCELLEMESİ ────────────────
+const _spToastEski = toast;
+toast = function(mesaj, tip='bilgi') {
+  const kap = document.getElementById('toast-kap');
+  if(!kap) { _spToastEski && _spToastEski(mesaj,tip); return; }
+
+  const renkler = {
+    basari: 'rgba(52,199,89,0.95)',
+    hata:   'rgba(255,59,48,0.95)',
+    uyari:  'rgba(255,149,0,0.95)',
+    bilgi:  'rgba(30,30,30,0.92)'
+  };
+  const ikonlar = { basari:'✅', hata:'❌', uyari:'⚠️', bilgi:'ℹ️' };
+
+  const el = document.createElement('div');
+  el.style.cssText = `
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px;
+    background:${renkler[tip]||renkler.bilgi};
+    backdrop-filter:blur(20px);
+    color:white;
+    border-radius:14px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.2);
+    font-size:.82rem;font-weight:500;
+    font-family:'Inter',sans-serif;
+    animation:sp-slide-in 220ms cubic-bezier(0.34,1.56,0.64,1);
+    max-width:320px;
+    cursor:pointer;
+  `;
+  el.innerHTML = `<span>${ikonlar[tip]||'ℹ️'}</span><span style="flex:1">${mesaj}</span>`;
+  el.onclick = () => el.remove();
+  kap.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(20px)';
+    el.style.transition = 'all 300ms';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+};
+
+// ── RESPONSİVE KONTROL ────────────────
+function responsiveKontrol() {
+  const genislik = window.innerWidth;
+  const sidebar = document.getElementById('sp-sidebar');
+  const topbar = document.getElementById('sp-topbar');
+  const content = document.getElementById('sp-content');
+
+  if(genislik > 768) {
+    // Masaüstü
+    if(sidebar) sidebar.classList.remove('acik');
+    document.getElementById('sp-overlay')?.classList.remove('acik');
+    document.body.style.overflow = '';
+  }
+}
+
+window.addEventListener('resize', responsiveKontrol);
+
+// ── KLAVYE KISAYOLLARI ────────────────
+document.addEventListener('keydown', e => {
+  // Escape → sidebar kapat / modal kapat
+  if(e.key === 'Escape') {
+    sidebarKapat();
+    document.querySelectorAll('.modal-overlay.acik').forEach(m => {
+      m.classList.remove('acik');
+    });
+  }
+  // Ctrl+K → arama
+  if(e.ctrlKey && e.key === 'k') {
+    e.preventDefault();
+    const input = document.getElementById('sp-arama-input');
+    if(input) { input.focus(); }
+  }
+});
+
+// ── ONLINE/OFFLINE DURUM ──────────────
+function baglantiDurumGuncelle() {
+  const el = document.getElementById('baglanti-durum');
+  if(!el) return;
+  const online = navigator.onLine;
+  el.innerHTML = `
+    <span style="width:6px;height:6px;border-radius:50%;background:${online?'var(--sp-yesil)':'var(--sp-sari)'};display:inline-block"></span>
+    ${online ? 'Çevrimiçi' : 'Çevrimdışı'}
+  `;
+  el.style.color = online ? 'var(--sp-yesil)' : 'var(--sp-turuncu)';
+}
+
+window.addEventListener('online',  baglantiDurumGuncelle);
+window.addEventListener('offline', baglantiDurumGuncelle);
+
+// ── SYNC BUTONU ANİMASYON ─────────────
+const _spSyncEski = supabaseYukle;
+supabaseYukle = async function() {
+  const btn = document.getElementById('sp-sync-btn');
+  if(btn) {
+    btn.innerHTML = '<span class="sp-loading"></span> Sync';
+    btn.disabled = true;
+  }
+  try {
+    await _spSyncEski();
+  } finally {
+    if(btn) {
+      btn.innerHTML = '☁️ Sync';
+      btn.disabled = false;
+    }
+  }
+};
+
+// ── BİLDİRİM BADGE ───────────────────
+function spBildirimBadgeGuncelle() {
+  const badge = document.getElementById('sp-notif-badge');
+  if(!badge) return;
+  const okunmamis = (veri.bildirimler||[]).filter(b=>!b.okundu).length;
+  badge.style.display = okunmamis > 0 ? 'block' : 'none';
+}
+
+// ── SWIPE GESTURE (MOBİL) ─────────────
+let _swipeBasX = 0;
+let _swipeBasladi = false;
+
+document.addEventListener('touchstart', e => {
+  _swipeBasX = e.touches[0].clientX;
+  _swipeBasladi = true;
+}, {passive:true});
+
+document.addEventListener('touchend', e => {
+  if(!_swipeBasladi) return;
+  const fark = e.changedTouches[0].clientX - _swipeBasX;
+  // Sağa kaydır → sidebar aç (soldan 40px içinde başlarsa)
+  if(fark > 70 && _swipeBasX < 40) sidebarAc();
+  // Sola kaydır → sidebar kapat
+  if(fark < -70) sidebarKapat();
+  _swipeBasladi = false;
+}, {passive:true});
+
+// ── SAYFA GEÇİŞ ANİMASYONU ───────────
+function spSayfaAnimasyon(id) {
+  const el = document.getElementById('sayfa-'+id);
+  if(!el) return;
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(8px)';
+  requestAnimationFrame(() => {
+    el.style.transition = 'opacity 220ms ease, transform 220ms ease';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  });
+}
+
+// ── DARK MODE TAKİP ───────────────────
+const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+darkModeQuery.addEventListener('change', () => {
+  // CSS variables otomatik güncellenir
+  console.log('[Tema] Dark mode:', darkModeQuery.matches);
+});
+
+// ── STAT KART SAYAÇ ANİMASYONU ────────
+function sayacAnimasyonu(el, hedef, sure=800) {
+  if(!el) return;
+  const baslangic = 0;
+  const adim = hedef / (sure / 16);
+  let simdiki = baslangic;
+  const timer = setInterval(() => {
+    simdiki = Math.min(simdiki + adim, hedef);
+    el.textContent = Math.round(simdiki).toLocaleString('tr-TR');
+    if(simdiki >= hedef) clearInterval(timer);
+  }, 16);
+}
+
+// ── PANEL GÜNCELLEME HOOK ─────────────
+const _spPanelGuncelleEski = typeof panelGuncelle === 'function' ? panelGuncelle : ()=>{};
+panelGuncelle = function() {
+  _spPanelGuncelleEski();
+  spBildirimBadgeGuncelle();
+  talepIstatistik();
+  setTimeout(()=>{
+    // Stat sayaç animasyonları
+    document.querySelectorAll('.stat-sayi').forEach(el => {
+      const sayi = parseInt(el.textContent.replace(/\D/g,''));
+      if(!isNaN(sayi) && sayi > 0 && sayi < 10000) {
+        sayacAnimasyonu(el, sayi, 600);
+      }
+    });
+  }, 100);
+};
+
+// ── MODAL SİSTEMİ GELİŞTİRME ─────────
+const _spModalAcEski = modalAc;
+modalAc = function(id) {
+  _spModalAcEski(id);
+  const modal = document.getElementById(id);
+  if(modal) {
+    modal.classList.add('acik');
+    document.body.style.overflow = 'hidden';
+    // İlk input'a focus
+    setTimeout(()=>{
+      const ilk = modal.querySelector('input:not([type=hidden]),select,textarea');
+      if(ilk) ilk.focus();
+    },300);
+  }
+};
+
+const _spModalKapatEski = modalKapat;
+modalKapat = function(id) {
+  _spModalKapatEski(id);
+  const modal = document.getElementById(id);
+  if(modal) {
+    modal.classList.remove('acik');
+    document.body.style.overflow = '';
+  }
+};
+
+// Modal dışına tıkla → kapat
+document.addEventListener('click', e => {
+  if(e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('acik');
+    document.body.style.overflow = '';
+  }
+});
+
+// ── SCROLL → TOPBAR GÖLGE ────────────
+const content = document.getElementById('sp-content');
+if(content) {
+  content.addEventListener('scroll', () => {
+    const topbar = document.getElementById('sp-topbar');
+    if(!topbar) return;
+    if(content.scrollTop > 10) {
+      topbar.style.boxShadow = '0 1px 0 var(--sp-sinir), 0 4px 20px rgba(0,0,0,0.06)';
+    } else {
+      topbar.style.boxShadow = '';
+    }
+  }, {passive:true});
+}
+
+// ── BAŞLANGIÇ ─────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    baglantiDurumGuncelle();
+    spBildirimBadgeGuncelle();
+    responsiveKontrol();
+
+    // Aktif sayfayı sidebar'da işaretle
+    const aktif = window._aktifSayfa || 'panel';
+    document.querySelectorAll('.sp-nav-btn').forEach(btn => {
+      btn.classList.toggle('aktif', btn.dataset.sayfa === aktif);
+    });
+
+    // Topbar başlık
+    const baslikEl = document.getElementById('sp-topbar-baslik');
+    if(baslikEl) baslikEl.textContent = SP_SAYFA_BASLIKLAR[aktif] || 'Panel';
+
+    console.log('[ŞantiyePro] T3 yüklendi ✅');
+  }, 500);
+});
   <script src="pwa-init.js"></script>
   <script src="supabase.js"></script>
 </body>
